@@ -10,8 +10,8 @@
 3. For M1, users should be able to register for accounts and login, as well as personalizing their accounts. The homepage will display the last uploaded meme; memes will be planted in the data store. 
 4. For M2, users should be able to upload and trade memes. 
 5. As far as our stretch goals go: 
-- users can rate memes (up/downvote), which give them currency. 
-  -This currency can be exchanged for other users' memes. 
+- users can rate memes (up/downvote), which gives currency to the owner of the meme. 
+  - This currency can be exchanged for other users' memes. 
 - New users will have a classic default meme uploaded to their accounts. 
 - On the homepage, scoreboards will be present. These are for most memes and most upvoted memes. 
 - Users can follow others and be followed in return. 
