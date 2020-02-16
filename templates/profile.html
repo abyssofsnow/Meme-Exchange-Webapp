@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<title>{{ user.username }}'s Profile </title>
+		<script>
+
+			var identity;
+
+			//Read the session cookie to determine if the profile being accessed is this user's profile.
+			function determineIfSelf() {
+	
+			}
+
+			function createXmlHttp() {
+				let xmlhttp;
+			
+				if (window.XMLHttpRequest)
+					xmlhttp = new XMLHttpRequest();
+				else
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			
+				if (!(xmlhttp)) 
+					alert("Your browser does not support AJAX!");
+			
+				return xmlhttp;
+			}
+			function addFriend() {
+				//Set up xmlhttprequest object.
+				var request = createXmlHttp();
+				var potentialFriends = [identity, user.username];
+
+				//TODO: Use this to show user feedback that the request was sent. 
+				request.onreadystatechange = function() {
+ 					if (request.readyState == 4 && request.status == 200) {
+ 						
+ 						
+ 					}
+ 				}
+
+				request.open("POST", "/sendFriendRequest", true);
+				xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				request.send("sender=" + identity + "&receiver=" + user.username);
+			}
+			function editProfile() {
+	
+			}
+		</script>
+	</head>
+	<body>
+
+		<div id="profile_content">
+			<img id="profile_picture" src="pic_trulli.jpg" alt="Profile Piture">
+			<span>
+				<h2 id="username">{{ user.username }}</h2>
+				{% if own_profile %}
+					<button id="add_friend_button" on-click="addFriend()">Add Friend</button>
+				{% else %}
+					<button on-click="editProfile()">Edit Profile</button>
+				{% endif %}
+			</span>
+				
+			{% if user.bio == "" %}
+				<p>User has no bio! :(</p>
+			{% else %}
+				<p>{{ user.bio }}</p>
+			{% endif %}
+
+
+			<div id="memes_list">
+			</div>
+			<div id="friends_list">
+			</div>
+		</div>
+	</body>
+</html>
