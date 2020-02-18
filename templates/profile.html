@@ -4,7 +4,6 @@
 
 		<title>{{ user.username }}'s Profile </title>
 		<script>
-
 			var identity;
 
 			//Read the session cookie to determine if the profile being accessed is this user's profile.
@@ -45,6 +44,30 @@
 			function editProfile() {
 	
 			}
+			
+			//displays profile settings if exist, else register new profile
+			function profileExist(username){
+				let xmlhttp = createXmlHttp();
+				
+				
+				if(database.find(username){ //account exists
+					alert(username + " is already registered!);
+					let getUrl = "/profile/" + username;
+					//log user in;
+				}else{
+					newProfile();
+				}
+				
+			}
+			
+			function newProfile(){
+				let firstname = document.getElementById("first-name").value;
+				let lastname = document.getElementById("last-name").value;
+				let username = document.getElementById("username").value;
+				
+				
+			
+			}
 		</script>
 	</head>
 	<body>
@@ -72,5 +95,33 @@
 			<div id="friends_list">
 			</div>
 		</div>
+		
+		<section>
+			<h1>Profile Settings<h1>
+				<form action = "/profile/newuser" method="POST" autocomplete="off">
+					<section>
+						<p><label><font face="Papyrus" size="3">First Name</font></label> 
+						<input name="first-name" id="first-name"></p>
+					</section>
+					
+					<section>
+						<p><label><font face="Papyrus" size="3">Last Name</font></label> 
+						<input name="last-name" id="last-name"></p>
+					</section>
+					
+					<section>
+						<p><label><font face="Papyrus" size="3">Userame</font></label> 
+						<input name="username" id="username"></p>
+					</section>
+					
+					<section>
+						<p><label><font face="Papyrus" size="3">Please enter your bio: </font></label><br>
+						<textarea cols="30" rows="8" name="bio" id="bio">What type of memer are you?</textarea>
+						</p>
+					</section>
+					
+				<button on-click="profileExist(username)">Save</button>
+			</form>
+		<section>
 	</body>
 </html>
