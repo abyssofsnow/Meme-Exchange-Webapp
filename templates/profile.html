@@ -14,6 +14,9 @@
 	
 			var editingMode = false;
 
+			if({{ own_profile }} === true)
+				identity = user;
+
 			//Read the session cookie to determine if the profile being accessed is this user's profile.
 			function determineIfSelf() {
 	
@@ -118,38 +121,39 @@
 					<p v-if="user.bio === ''">You have no bio! :(</p>
 					<p v-else >{{ user.bio }}</p>
 
-
-					{# Show memes and friends #}
-					<div id="memes_list">
-					</div>
-
-					<div id="friends_list">
-					</div>
 					
 				</div>
 				
 			</div>
 		{% else %}
 			<div id="other_profile_content">
-			<img id="profile_picture" src="example_pic.jpg" alt="Profile Piture">
+				<img id="profile_picture" src="example_pic.jpg" alt="Profile Piture">
 
-			<span>
-				<h2 id="username">{{ user.username }}</h2>
-				<button v-if="identity !== ''" id="add_friend_button" on-click="addFriend()">Add Friend</button>
-			</span>
+				<span>
+					<h2 id="username">{{ user.username }}</h2>
+					<button v-if="identity !== ''" id="add_friend_button" on-click="addFriend()">Add Friend</button>
+				</span>
 			
-			{# Present Bio #}
-			<p v-if="user.bio === ''">User has no bio! :(</p>
-			<p v-else >{{ user.bio }}</p>
+				{# Present the user's Bio #}
+				<p v-if="user.bio === ''">User has no bio! :(</p>
+				<p v-else >{{ user.bio }}</p>
 
 
-			{# Show memes and friends #}
-			<div id="memes_list">
 			</div>
-			<div id="friends_list">
-			</div>
-		</div>
 		{% endif %}
+
+		{# Show memes and friends #}
+		<div id="memes_list">
+
+			{% for meme in memes_owned %}
+				<div id="meme">
+					<a href="">{{ meme.title }}</a> 
+				</div>
+			{% endfor %}
+		</div>
+
+		<div id="friends_list">
+		</div>
 		
 		<section>
 			<h1>Profile Settings<h1>

@@ -20,13 +20,19 @@
 	def navigate_user_page(username):
 
 		#Load the datastore object for the user.
-		query = client.query(kind='User')
+		query = datastore_client.query(kind='User')
 		query.add_filter('username', '=', username)
 		user_objects = list(query.fetch())
 
 		#If the user is found, use its data to populate the profile.
 		if(len(user_object) > 0)
-			render_template('profile.html', user_to_display=user_objects[0], own_profile=True) #For now, it will always act like it's the user's own profile.
+
+			#Load the memes associated with this user. 
+			query = datastore_client.query(kind='Meme')
+			query.add_filter('owner', '=', username)
+			memes = list(query.fetch())
+			
+			render_template('profile.html', user_to_display=user_objects[0], memes_owned=memes own_profile=True) #For now, it will always act like it's the user's own profile.
 		else
 			return "User not found"
 
@@ -39,9 +45,17 @@
 		receiver = request.form['receiver']
 
 
-	@app.route('meme/<meme_id>')
-	def navigate_meme_page():
-		return "Meme Page"
+	@app.route('meme/<meme_id>', methods = ['GET'])
+	def navigate_meme_page(meme_id):
+		#Load the datastore object for the meme.
+		query = datastore_client.query(kind='Meme')
+		query.add_filter('key', '=', meme_id)
+		memes = list(query.fetch())
+
+		if(len(memes) > 0)
+			render_template('meme.html', meme_to_display=memes[0])
+		else
+			return "Meme not found"
 
 
 	if __name__ == '__main__':
