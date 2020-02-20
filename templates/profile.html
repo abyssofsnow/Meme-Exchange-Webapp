@@ -1,10 +1,18 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
 	<head>
 
-		<title>{{ user.username }}'s Profile </title>
-		<script>
-			var identity;
+		<title>{{ user_to_display.username }}'s Profile </title>
+
+
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> <!-- This is the inclusion of Vue. -->
+
+		<script> //This is our JS.
+			var identity; //This is who I'm logged in as.
+			var user = {{ user_to_display }}; //I'm storing the data I sent from the server into a JS variable so if I edit the profile,
+												//I don't have to requery the DB.
+	
+			var editingMode = false;
 
 			//Read the session cookie to determine if the profile being accessed is this user's profile.
 			function determineIfSelf() {
@@ -27,7 +35,7 @@
 			function addFriend() {
 				//Set up xmlhttprequest object.
 				var request = createXmlHttp();
-				var potentialFriends = [identity, user.username];
+				var potentialFriends = [identity, user.username]; //Sender of the request (me), Recipient of the request (user diplayed).
 
 				//TODO: Use this to show user feedback that the request was sent. 
 				request.onreadystatechange = function() {
@@ -42,7 +50,7 @@
 				request.send("sender=" + identity + "&receiver=" + user.username);
 			}
 			function editProfile() {
-	
+				editingMode = true;
 			}
 			
 			//displays profile settings if exist, else register new profile
@@ -71,30 +79,77 @@
 		</script>
 	</head>
 	<body>
+		(% if own_profile %} {# If this is the user's own profile, allow them to edit it. #}
+			<div id ="own_profile_content">
 
-		<div id="profile_content">
-			<img id="profile_picture" src="pic_trulli.jpg" alt="Profile Piture">
+				<span>
+					<h2 id="username">Your Profile</h2>
+					<button v-if="!editingMode" on-click="editProfile()">Edit Profile</button>
+				</span>
+
+				{# Present image #}
+				<img id="profile_picture" src="example_pic.jpg" alt="Profile Piture">
+
+
+				{# If we're in editing mode, give the user the ability to edit their picture and bio. #}
+				<div v-if="!editingMode" id="edit_mode_content">
+						
+
+					{#Allow user to edit their bio. #}
+					<form action="/editProfileBio">
+						{#Allow user to edit/upload new image #}
+						<form action="/uploadProfilePicture">
+	  						<label for="img">Upload new profile picture:</label>
+	  						<input type="file" id="img" name="img" accept="image/*">
+	  						<input type="submit">
+						</form>
+					
+						<label for="fname">Choose your bio: </label>
+						<input v-model="user.bio"><br>
+						<input type="submit" value="Save">
+					</form>
+					
+
+					
+				</div>
+				<div v-else id="present_mode_content">
+					
+					{# Present Bio #}
+					<p v-if="user.bio === ''">You have no bio! :(</p>
+					<p v-else >{{ user.bio }}</p>
+
+
+					{# Show memes and friends #}
+					<div id="memes_list">
+					</div>
+
+					<div id="friends_list">
+					</div>
+					
+				</div>
+				
+			</div>
+		{% else %}
+			<div id="other_profile_content">
+			<img id="profile_picture" src="example_pic.jpg" alt="Profile Piture">
+
 			<span>
 				<h2 id="username">{{ user.username }}</h2>
-				{% if own_profile %}
-					<button id="add_friend_button" on-click="addFriend()">Add Friend</button>
-				{% else %}
-					<button on-click="editProfile()">Edit Profile</button>
-				{% endif %}
+				<button v-if="identity !== ''" id="add_friend_button" on-click="addFriend()">Add Friend</button>
 			</span>
-				
-			{% if user.bio == "" %}
-				<p>User has no bio! :(</p>
-			{% else %}
-				<p>{{ user.bio }}</p>
-			{% endif %}
+			
+			{# Present Bio #}
+			<p v-if="user.bio === ''">User has no bio! :(</p>
+			<p v-else >{{ user.bio }}</p>
 
 
+			{# Show memes and friends #}
 			<div id="memes_list">
 			</div>
 			<div id="friends_list">
 			</div>
 		</div>
+		{% endif %}
 		
 		<section>
 			<h1>Profile Settings<h1>

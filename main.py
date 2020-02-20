@@ -26,7 +26,7 @@
 
 		#If the user is found, use its data to populate the profile.
 		if(len(user_object) > 0)
-			render_template('profile.html', user=user_objects[0], own_profile=True) #For now, it will always act like it's the user's own profile.
+			render_template('profile.html', user_to_display=user_objects[0], own_profile=True) #For now, it will always act like it's the user's own profile.
 		else
 			return "User not found"
 
