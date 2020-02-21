@@ -32,7 +32,7 @@
 			query.add_filter('owner', '=', username)
 			memes = list(query.fetch())
 			
-			render_template('profile.html', user_to_display=user_objects[0], memes_owned=memes own_profile=True) #For now, it will always act like it's the user's own profile.
+			render_template('profile.html', user_to_display=user_objects[0], memes_owned=memes, own_profile=True) #For now, it will always act like it's the user's own profile.
 		else
 			return "User not found"
 
