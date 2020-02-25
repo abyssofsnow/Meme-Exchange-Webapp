@@ -19,7 +19,7 @@
 	@app.route('/user/<username>', methods = ['GET'])
 	def navigate_user_page(username):
 
-		#Load the datastore object for the user.
+		#Load the datastore object for the user to present.
 		query = datastore_client.query(kind='User')
 		query.add_filter('username', '=', username)
 		user_objects = list(query.fetch())
@@ -56,6 +56,14 @@
 			render_template('meme.html', meme_to_display=memes[0])
 		else
 			return "Meme not found"
+
+
+	def read_session_cookie(cookie):
+		#Look up session id in session. 
+
+		#If found, return user name string.
+
+		#If not, "".
 
 
 	if __name__ == '__main__':

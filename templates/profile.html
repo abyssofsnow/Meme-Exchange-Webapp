@@ -34,9 +34,11 @@
 
 				//TODO: Use this to show user feedback that the request was sent. 
 				request.onreadystatechange = function() {
- 					if (request.readyState == 4 && request.status == 200) {
- 						
- 						
+ 					if (request.readyState == 4) {
+						if(request.status == 200) 
+ 							alert("Your friend request has been sent.");
+						else 
+							alert("You have already sent a friend request! It's pending.");
  					}
  				}
 
@@ -95,17 +97,17 @@
 				<div id="edit_mode_content">
 						
 
-					{#Allow user to edit their bio. #}
+					{# Allow user to edit their bio. #}
 					<form action="/editProfileBio">
-						{#Allow user to edit/upload new image #}
+						{# Allow user to edit/upload new image #}
 						<form action="/uploadProfilePicture">
 	  						<label for="img">Upload new profile picture:</label>
 	  						<input type="file" id="img" name="img" accept="image/*">
 	  						<input type="submit">
 						</form>
 					
-						<label for="fname">Choose your bio: </label>
-						<input v-model="user.bio"><br>
+						<label for="bio_to_display">Choose your bio: </label>
+						<input id="bio_to_display" value="{{ user_to_display.bio }}"> <br>
 						<input type="submit" value="Save">
 					</form>
 					
