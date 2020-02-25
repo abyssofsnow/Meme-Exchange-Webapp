@@ -1,16 +1,19 @@
-from flask import Flask, render_template, request
+from flask import Flask, Request, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
 import google.oauth2.id_token
+import json
 
 
 app = Flask(__name__)
 datastore_client = datastore.Client()
 
+firebase_request_adapter = requests.Request()
+
 # new user creation from login page
 @app.route('/createuser/<newUser>', methods=['POST'])
 def createuser(newUser):
-    entity = datastore.Entity(key=datastore_client.key('User'))
+    entity = datastore.Entity(key=datastore_client.key('User', newUser))
     entity.update({
         'username': newUser
     })
@@ -24,7 +27,7 @@ def navigate_home():
 # The login/registration page handler
 @app.route('/login')
 def navigate_login():
-    return "Login Page"
+    render_template('login.html')
 
 
 @app.route('/user/<username>', methods=['GET'])
@@ -64,6 +67,48 @@ def update_user_page(username):
 def send_friend_request(username):
     sender = request.form['sender']
     receiver = request.form['receiver']
+
+
+    # Check that this user hasn't already received a friend request from recip.
+    query = datastore_client.query(kind='User')
+    query.add_filter('username', '=', sender)
+    sender_objects = list(query.fetch())
+
+    # Return error if this user already has friend request.
+    for friend_request in sender_objects[0].friend_request_in:
+        if(friend_request == receiver):
+            return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
+
+    # Check that this user hasn't already sent a friend request 
+    # from this user.
+    query = datastore_client.query(kind='User')
+    query.add_filter('username', '=', receiver)
+    receiver_objects = list(query.fetch())
+
+    # Return error if this user already sent friend request.
+    for friend_request in receiver_objects[0].friend_request_in:
+        if(friend_request == sender):
+            return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
+
+    # Return error if they are already friends.
+    for friend_request in sender_objects[0].friends:
+        if(friend_request == receiver):
+            return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
+
+    # Add a friend request between these two.
+    try:
+        with datastore_client.transaction():
+            key = datastore_client.key('User', receiver)
+            task = datastore_client.get(key)
+
+            # Add the sender to the receiver's pending invites
+            task['friend_request_in'] = receiver_objects[0].friend_request_in.append(sender)
+
+            datastore_client.put(task)
+    except:
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'} 
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
 
 @app.route('meme/<meme_id>', methods=['GET'])
