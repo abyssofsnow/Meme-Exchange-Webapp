@@ -7,6 +7,14 @@ app = Flask(__name__)
 def navigate_home():
 	return render_template("home.html")
 
+@app.route('/home')
+def go_home():
+	return render_template("home.html")
+	
+@app.route('/popularMeme')
+def go_popularMeme():
+	return render_template("popularMeme.html")
+
 # The login/registration page handler
 @app.route('/login')
 def navigate_login():
