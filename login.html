@@ -149,6 +149,8 @@
             // user information.
             document.cookie = "token=" + token;
             });
+          var xhttp = new XMLHttpRequest();
+          xhttp.open("POST", "/createuser/" + displayName, true);
           if (!emailVerified) {
             document.getElementById('quickstart-verify-email').disabled = false;
           }

@@ -1,10 +1,20 @@
 	from flask import Flask, Response, render_template, request
+	from google.auth.transport import requests
 	from google.cloud import datastore
+	import google.oauth2.id_token
 
 
 	app = Flask(__name__)
 	datastore_client = datastore.Client()
 	
+	# new user creation from login page
+	@app.route('/createuser/<newUser>', methods = ['POST'])
+	def createuser(newUser):
+		entity = datastore.Entity(key=datastore_client.key('User'))
+		entity.update({
+			'username':newUser
+		})
+		datastore_client.put(entity)
 
 	# The home page handler
 	@app.route('/')
@@ -18,7 +28,14 @@
 
 	@app.route('/user/<username>', methods = ['GET'])
 	def navigate_user_page(username):
-
+		#Verify Firebase Auth.
+		
+		id_token = request.cookies.get("token")
+		if id_token:
+			try:
+				claims = google.oauth2.id_token.verify_firebase_token(id_token, firebase_request_adapter)
+			except ValueError as exc:
+				error_message = str(exc)
 		#Load the datastore object for the user.
 		query = datastore_client.query(kind='User')
 		query.add_filter('username', '=', username)
