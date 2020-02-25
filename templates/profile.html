@@ -34,11 +34,20 @@
 
 				//TODO: Use this to show user feedback that the request was sent. 
 				request.onreadystatechange = function() {
- 					if (request.readyState == 4) {
-						if(request.status == 200) 
- 							alert("Your friend request has been sent.");
-						else 
-							alert("You have already sent a friend request! It's pending.");
+
+ 					if (request.readyState == 4 {
+                        switch(request.status) {
+                            case 200: //Success
+                                break;
+                            case 500: //Server failed to send request.
+                                break;
+                            case 401: //These users are already friends
+                                break;
+                            case 400: //This user already sent a request.
+                                break;
+                            case 403: //This user already received a request.
+                                break;
+                        }
  					}
  				}
 
