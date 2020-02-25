@@ -6,7 +6,7 @@ import google.oauth2.id_token
 
 app = Flask(__name__)
 datastore_client = datastore.Client()
-firebase_request_adapter = requests.Request()
+
 # new user creation from login page
 @app.route('/createuser/<newUser>', methods=['POST'])
 def createuser(newUser):
