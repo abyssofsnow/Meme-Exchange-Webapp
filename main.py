@@ -16,7 +16,7 @@ def navigate_login():
 def navigate_user_page():
 	return "User Page"
 
-@app.route('meme/<meme_id>')
+@app.route('/meme/<meme_id>')
 def navigate_meme_page():
 	return "Meme Page"
 
