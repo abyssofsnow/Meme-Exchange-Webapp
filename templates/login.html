@@ -150,7 +150,7 @@
             document.cookie = "token=" + token;
             });
           var xhttp = new XMLHttpRequest();
-          xhttp.open("POST", "/createuser/" + displayName, true);
+          xhttp.open("POST", "/createuser/" + email, true);
           if (!emailVerified) {
             document.getElementById('quickstart-verify-email').disabled = false;
           }
