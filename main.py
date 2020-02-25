@@ -1,4 +1,3 @@
-
 from flask import Flask, Request, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
@@ -7,7 +6,7 @@ import json
 
 
 app = Flask(__name__)
-datastore_client = datastore.Client()
+datastore_client = datastore.Client('memes-marketplace')
 
 firebase_request_adapter = requests.Request()
 
@@ -19,6 +18,7 @@ def createuser(newUser):
         'username': newUser
     })
     datastore_client.put(entity)
+    return render_template('login.html')
 
 # The home page handler
 @app.route('/')
@@ -28,7 +28,7 @@ def navigate_home():
 # The login/registration page handler
 @app.route('/login')
 def navigate_login():
-    render_template('login.html')
+    return render_template('login.html')
 
 
 @app.route('/user/<username>', methods=['GET'])
@@ -112,7 +112,7 @@ def send_friend_request(username):
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
 
-@app.route('meme/<meme_id>', methods=['GET'])
+@app.route('/meme/<meme_id>', methods=['GET'])
 def navigate_meme_page(meme_id):
     # Load the datastore object for the meme.
     query = datastore_client.query(kind='Meme')
@@ -125,4 +125,6 @@ def navigate_meme_page(meme_id):
         return "Meme not found"
 
 
+if __name__ == '__main__':
+    app.run()
 
