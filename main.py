@@ -5,7 +5,7 @@ app = Flask(__name__)
 # The home page handler
 @app.route('/')
 def navigate_home():
-	return "Home"
+	return render_template("home.html")
 
 # The login/registration page handler
 @app.route('/login')
