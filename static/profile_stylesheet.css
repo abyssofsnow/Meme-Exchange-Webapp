@@ -1,0 +1,23 @@
+#profile_picture {
+	max-width: 30%;
+	max-height: 25%;
+}
+
+#confirmation {
+  visibility: hidden;
+  min-width: 250px;
+
+  margin-left: -125px;
+  border-radius: 5px;
+  padding: 10px;
+  position: fixed;
+  z-index: 1; /* Position over top of page content */
+  left: 50%;
+  bottom: 30px;
+  
+  text-align: center;
+  color:white;
+  background-color: #333;
+}
+
+

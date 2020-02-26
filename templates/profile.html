@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 
@@ -32,22 +32,25 @@
 				var request = createXmlHttp();
 				var potentialFriends = [identity, user.username]; //Sender of the request (me), Recipient of the request (user diplayed).
 
-				//TODO: Use this to show user feedback that the request was sent. 
 				request.onreadystatechange = function() {
-
  					if (request.readyState == 4 {
-                        switch(request.status) {
+                         switch(request.status) {
                             case 200: //Success
+                                document.getElementById("confirmation-message").innerHTML = "Friend request sent!";
                                 break;
                             case 500: //Server failed to send request.
+                                document.getElementById("confirmation-message").innerHTML = "A server error occurred.";
                                 break;
                             case 401: //These users are already friends
+                                document.getElementById("confirmation-message").innerHTML = "You two are already friends!";
                                 break;
                             case 400: //This user already sent a request.
+                                document.getElementById("confirmation-message").innerHTML = "Be patient! You've already sent a request.";
                                 break;
                             case 403: //This user already received a request.
+                                document.getElementById("confirmation-message").innerHTML = "Check your notifications!"
                                 break;
-                        }
+                         }
  					}
  				}
 
@@ -116,7 +119,15 @@
 		</script>
 	</head>
 	<body>
-		(% if own_profile == user_to_display %} {# If this is the user's own profile, allow them to edit it. #}
+        <div id="confirmation">
+            <h3 style="margin-top:0;">Header</h3>
+
+	        <div class="confirmation-message">
+    	        Friend Request Sent!
+  	        </div>
+        </div>
+
+		{% if own_profile == user_to_display %} {# If this is the user's own profile, allow them to edit it. #}
 			<div id ="own_profile_content">
 
 				<span>
@@ -192,6 +203,11 @@
 		</div>
 
 		<div id="friends_list">
+            {% for friend in user.friends %}
+				<div id="friend">
+					<a href="/user/{{friend.username}}">{{ friend.username }}</a> 
+				</div>
+			{% endfor %}
 		</div>
 		
 		<section>
