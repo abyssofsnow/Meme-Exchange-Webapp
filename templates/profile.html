@@ -5,14 +5,14 @@
 		<title>{{ user_to_display.username }}'s Profile </title>
 
 
-		<script> //This is our JS.
+		<script src="https://apis.google.com/js/client.js"> //This is our JS.
 			var identity = {{ own_profile }} //This is who I'm logged in as.
 			var user = {{ user_to_display }}; //I'm storing the data I sent from the server into a JS variable so if I edit the profile,
 												//I don't have to requery the DB.
 			 
 			//Initially don't show edit mode.
 			document.getElementById("edit_mode_content").style.display = "none"; 
-  
+  			document.getElementById("profileEdit").style.display = "none"; 
 
 			function createXmlHttp() {
 				let xmlhttp;
@@ -64,29 +64,56 @@
 
 			}
 			
-			//displays profile settings if exist, else register new profile
+			//displays profile settings if exist, else add new profile settings
 			function profileExist(username){
-				let xmlhttp = createXmlHttp();
+				var profileData = document.getElementById('bio');
+				var profileForm = new FormData(profileData);
 				
+				//creating new request object
+				let xmlhttp = new XMLHttpRequest();
+				let profileURL = "/user/" + username;
 				
-				if(database.find(username){ //account exists
-					alert(username + " is already registered!);
-					let getUrl = "/profile/" + username;
-					//log user in;
+				xmlhttp.onreadystatechange = function(){
+					if (xmlhttp.readyState == 4 && (xmlhttp.status == 200)){
+						console.log(xmlHttp.status);
+					}else{
+						console.log("Not ready");
+					}
+					if (xmlhttp.status === 404){return;}
+					try{
+						let response = JSON.parse(xmlhttp.responseText);
+						document.getElementById("bio").value = response["bio"];
+						document.getElementById("
+					}catch (err){
+						console.error("Server Error");
+					}
+
+				}				
+				
+				//TODO: Getting data from storage bucket-----------------------------
+				var parameterObj = {};	//declaring and initializing parameter object 
+				parameterObj['MemeExchange'] = "";	//setting project id
+				
+				//Making request to Google Cloud Storage API
+				var request = gapi.client.storage.buckets.list(parameterObj);
+				
+				//retrieving and inserting into textbox element
+				document.getElementById("bio").innerHTML = google.storage;
+				//let firstname = document.getElementById("first-name").value;
+				
+				//TODO: filling existent data into profile form html
+				if(profileForm.has(name)){
+					//display data if has data
 				}else{
-					newProfile();
+					document.getElementById("profileEdit").style.display = "inline";
 				}
 				
+				//configuring request
+				xmlhttp.open("POST", profileURL, [async, user.username, user.password]);
+				//sending request over network
+				xmlhttp.send(profileForm);				
 			}
-			
-			function newProfile(){
-				let firstname = document.getElementById("first-name").value;
-				let lastname = document.getElementById("last-name").value;
-				let username = document.getElementById("username").value;
 				
-				
-			
-			}
 		</script>
 	</head>
 	<body>
@@ -169,31 +196,42 @@
 		</div>
 		
 		<section>
-			<h1>Profile Settings<h1>
-				<form action = "/profile/newuser" method="POST" autocomplete="off">
+			<div id="profileEdit" class="collapse">
+			
+				<h1>Profile Settings<h1>
+				<form action = "/profileform" method="POST" autocomplete="off">
+				
 					<section>
-						<p><label><font face="Papyrus" size="3">First Name</font></label> 
-						<input name="first-name" id="first-name"></p>
+						<label>
+							<font face="Papyrus" size="3">First Name</font>
+						</label> 
+						<input name="first-name" id="firstName">
 					</section>
 					
 					<section>
-						<p><label><font face="Papyrus" size="3">Last Name</font></label> 
-						<input name="last-name" id="last-name"></p>
+						<label>
+							<font face="Papyrus" size="3">Last Name</font>
+						</label> 
+						<input name="last-name" id="lastName">
 					</section>
 					
 					<section>
-						<p><label><font face="Papyrus" size="3">Userame</font></label> 
-						<input name="username" id="username"></p>
+						<label>
+							<font face="Papyrus" size="3">Username</font>
+						</label> 
+						<input name="username" id="username">
 					</section>
 					
 					<section>
-						<p><label><font face="Papyrus" size="3">Please enter your bio: </font></label><br>
+						<label>
+							<font face="Papyrus" size="3">Please enter your bio: </font>
+						</label><br>
 						<textarea cols="30" rows="8" name="bio" id="bio">What type of memer are you?</textarea>
-						</p>
 					</section>
 					
 				<button on-click="profileExist(username)">Save</button>
-			</form>
+				</form>
+			</div>
 		<section>
 	</body>
 </html>
