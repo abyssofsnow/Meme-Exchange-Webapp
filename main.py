@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0c9248bf9f988591ea1af20956798afa7c43649d
 from flask import Flask, Request, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
@@ -40,6 +43,7 @@ def signup():
     return render_template('signup.html')
 
 
+<<<<<<< HEAD
 
 # The home page handler
 @app.route('/')
@@ -55,6 +59,8 @@ def go_popularMeme():
 	return render_template("popularMeme.html")
 
 
+=======
+>>>>>>> 0c9248bf9f988591ea1af20956798afa7c43649d
 # The login/registration page handler
 @app.route('/login')
 def navigate_login():
@@ -201,5 +207,8 @@ def server_error(e):
 
 if __name__ == '__main__':
     app.run()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0c9248bf9f988591ea1af20956798afa7c43649d
 
