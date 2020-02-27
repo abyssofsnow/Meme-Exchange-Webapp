@@ -65,7 +65,8 @@ def navigate_user_page(username):
 	identity = ''
 
     # Verify Firebase Auth.
-    id_token = request.cookies.get("token")
+	id_token = request.cookies.get("token")
+
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token, firebase_request_adapter)
