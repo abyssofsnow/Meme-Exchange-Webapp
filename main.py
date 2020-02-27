@@ -1,14 +1,21 @@
 from flask import Flask, Request, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
+from google.cloud import storage
+
 import google.oauth2.id_token
 import json
+import logging
+import os
 
 
 app = Flask(__name__)
 datastore_client = datastore.Client('memes-marketplace')
 
 firebase_request_adapter = requests.Request()
+
+#configuring environment variable via app.yaml
+CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 
 # new user creation from login page
 @app.route('/createuser/<newUser>', methods=['POST'])
@@ -112,6 +119,28 @@ def send_friend_request(username):
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
 
+@app.route('/uploadImage', methods=['POST'])
+def upload(image):
+    #processing and uploading image to GCS
+    uploadedImg = request.files.get('file')
+
+    if not uploadedImg:
+        return 'Upload unsuccessful', 400
+
+    #creating cloud storage client
+    client = storage.Client()
+
+    #getting bucket to upload to
+    bucket2load = client.get_bucket(CLOUD_STORAGE_BUCKET)
+
+    #creating blob and uploading image
+    blob = bucket2load.blob(uploadedImg.filename)
+    blob.uploaded_from_string(uploadedImg, content_type='image/*')
+
+    #return updated profile pic
+    return None
+
+
 @app.route('/meme/<meme_id>', methods=['GET'])
 def navigate_meme_page(meme_id):
     # Load the datastore object for the meme.
@@ -124,6 +153,12 @@ def navigate_meme_page(meme_id):
     else:
         return "Meme not found"
 
+@app.errorhandler(500)
+def server_error(e):
+    logging.exception('An error has occurred')
+    return """
+    An internal error has occurred: <pre>{}</pre>
+    """.format(e), 500
 
 if __name__ == '__main__':
     app.run()
