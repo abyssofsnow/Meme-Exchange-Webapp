@@ -155,7 +155,7 @@ def send_friend_request():
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
-
+"""
 @app.route('/uploadImage', methods=['POST'])
 def upload(image):
     #processing and uploading image to GCS
@@ -176,7 +176,7 @@ def upload(image):
 
     #return updated profile pic
     return None
-
+"""
 
 @app.route('/meme/<meme_id>', methods=['GET'])
 def navigate_meme_page(meme_id):
