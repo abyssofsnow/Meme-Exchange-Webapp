@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<title>{{ user_to_display.username }}'s Profile </title>
+
+		<link rel="stylesheet" href="/static/profile_stylesheet.css">
+
+
+		<script src="https://apis.google.com/js/client.js"> //This is our JS.
+		</script>
+		
+	</head>
+	<body>
+        <div id="confirmation">
+            <h3 style="margin-top:0;">Status</h3>
+
+	        <div id="confirmation-message">
+    	        Friend Request Sent!
+  	        </div>
+        </div>
+
+		{% if own_profile == user_to_display %} {# If this is the user's own profile, allow them to edit it. #}
+			<div id ="own_profile_content">
+
+				<span>
+					<h2 id="username">Your Profile</h2>
+					<button id="edit_profile_button" onclick="editProfile()">Edit Profile</button>
+				</span>
+
+				<script>
+                    function editProfile() {
+                        //Show the editing stuff. 
+                        document.getElementById("edit_mode_content").style.display = "inline"; 
+
+                        //Hide the viewing stuff. 
+                        document.getElementById("present_mode_content").style.display = "none";
+                    }
+                </script>
+
+				{# Present image #}
+				<img id="profile_picture" src="example_pic.jpg" alt="Profile Picture">
+
+
+				{# If we're in editing mode, give the user the ability to edit their picture and bio. #}
+				<div id="edit_mode_content" style="display:none;">
+						
+
+					{# Allow user to edit their bio. #}
+					<form action="/editProfileBio">
+						{# Allow user to edit/upload new image #}
+						<form action="/uploadProfilePicture">
+	  						<label for="img">Upload new profile picture:</label>
+	  						<input type="file" id="img" name="img" accept="image/*">
+	  						<input type="submit">
+						</form>
+					
+						<label for="bio_to_display">Choose your bio: </label>
+						<input id="bio_to_display" value="{{ user_to_display.bio }}"> <br>
+						<input type="submit" value="Save">
+					</form>
+					
+
+					
+				</div>
+				<div id="present_mode_content">
+					
+					{# Present Bio #}
+					<p>Bio: {{ user_to_display.bio }}</p>
+
+					
+				</div>
+				
+			</div>
+		{% else %}
+			<div id="other_profile_content">
+
+				
+				<h2 id="username">{{ user_to_display.username }}</h2>
+				{% if identity != '' %}
+					<button id="add_friend_button" onclick="addFriend()">Add Friend</button>
+				{% endif %}
+				
+
+				<img id="profile_picture" src="/static/placeholder.jpg" alt="Profile Picture">
+			
+				{# Present the user's Bio #}
+				<h4 style="margin-bottom:0;">Bio:</h4>
+				{% if user_to_display.bio != '' %}
+					<p>User has no bio! :(</p>
+				{% else %}
+					<p>{{ user_to_display.bio }}</p>
+				{% endif %}
+			
+
+
+			</div>
+		{% endif %}
+
+
+		<div style="display:grid;grid-template-columns: auto auto;">
+			{# Show memes and friends #}
+			<div id="memes_list" class="scrollable_list">
+
+				{% for meme in memes_owned %}
+					<h4>Memes:</h4>
+					<div id="meme">
+						<a href="">{{ meme.title }}</a> 
+					</div>
+				{% endfor %}
+			</div>
+
+			<div id="friends_list" class="scrollable_list">
+		        {% for friend in user_to_display.friends %}
+					<h4>Friends</h4>
+					<div id="friend">
+						<a href="/user/{{friend.username}}">{{ friend.username }}</a> 
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+		
+		<section>
+			<div id="profileEdit" class="collapse" style="display:none;">
+			
+				<h1>Profile Settings<h1>
+				<form action="/uploadImage" method="POST">
+					<div>
+						<label for:"fileUpload">
+							<font face="Papyrus" size="3">Upload New Photo </font>
+						</label>
+						<input type="file" id="img" name="fileUpload" accept="image/*">
+					</div>
+					<div>
+						<button onclick="profileImg(username)">Submit</button>
+					</div>
+				</form>
+				<form action = "/profileform" method="POST" autocomplete="off">
+				
+					<section>
+						<label>
+							<font face="Papyrus" size="3">First Name</font>
+						</label> 
+						<input name="first-name" id="firstName">
+					</section>
+					
+					<section>
+						<label>
+							<font face="Papyrus" size="3">Last Name</font>
+						</label> 
+						<input name="last-name" id="lastName">
+					</section>
+					
+					<section>
+						<label>
+							<font face="Papyrus" size="3">Username</font>
+						</label> 
+						<input name="username" id="username">
+					</section>
+					
+					<p><label>
+							<font face="Papyrus" size="3">Please enter your bio: </font>
+						</label><br>
+					</p>
+					<textarea cols="30" rows="8" name="bio" id="bio">What type of memer are you?</textarea>
+					
+					
+				<button onclick="profileExist(username)">Save</button>
+				</form>
+			</div>
+		<section>
+		<script>
+			var identity = '{{ identity }}' //This is who I'm logged in as.
+			var user = {{ safe_user_to_display|safe }}; //I'm storing the data I sent from the server into a JS variable so if I edit the profile,
+												//I don't have to requery the DB.
+			 
+
+			function createXmlHttp() {
+				let xmlhttp;
+			
+				if (window.XMLHttpRequest)
+					xmlhttp = new XMLHttpRequest();
+				else
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			
+				if (!(xmlhttp)) 
+					alert("Your browser does not support AJAX!");
+			
+				return xmlhttp;
+			}
+			
+		
+			//displays profile settings if exist, else add new profile settings
+			function profileExist(username){
+				var profileData = document.getElementById('bio');
+				var profileForm = new FormData(profileData);
+				
+				//creating new request object
+				let xmlhttp = new XMLHttpRequest();
+				let profileURL = "/user/" + username;
+				
+				xmlhttp.onreadystatechange = function(){
+					if (xmlhttp.readyState == 4 && (xmlhttp.status == 200)){
+						console.log(xmlHttp.status);
+					}else{
+						console.log("Not ready");
+					}
+					if (xmlhttp.status === 404){return;}
+					try{
+						let response = JSON.parse(xmlhttp.responseText);
+						document.getElementById("bio").value = response["bio"];
+					}catch (err){
+						console.error("Server Error");
+					}
+
+				}				
+				
+				//TODO: Getting data from storage bucket-----------------------------
+				var parameterObj = {};	//declaring and initializing parameter object 
+				parameterObj['MemeExchange'] = "";	//setting project id
+				
+				//Making request to Google Cloud Storage API
+				var request = gapi.client.storage.buckets.list(parameterObj);
+				
+				//retrieving and inserting into textbox element
+				document.getElementById("bio").innerHTML = google.storage;
+				//let firstname = document.getElementById("first-name").value;
+				
+				//TODO: filling existent data into profile form html
+				if(profileForm.has(name)){
+					//display data if has data
+				}else{
+					document.getElementById("profileEdit").style.display = "inline";
+				}
+				
+				//configuring request
+				xmlhttp.open("POST", profileURL, [async, user.username, user.password]);
+				//sending request over network
+				xmlhttp.send(profileForm);				
+			}
+			function addFriend() {
+				//Set up xmlhttprequest object.
+				var request = createXmlHttp();
+
+				request.onreadystatechange = function() {
+ 					if (request.readyState == 4) {
+		                 switch(request.status) {
+		                    case 200: //Success
+		                        document.getElementById("confirmation-message").innerHTML = "Friend request sent!";
+		                        break;
+		                    case 500: //Server failed to send request.
+		                        document.getElementById("confirmation-message").innerHTML = "A server error occurred.";
+		                        break;
+		                    case 401: //These users are already friends
+		                        document.getElementById("confirmation-message").innerHTML = "You two are already friends!";
+		                        break;
+		                    case 400: //This user already sent a request.
+		                        document.getElementById("confirmation-message").innerHTML = "Be patient! You've already sent a request.";
+		                        break;
+		                    case 403: //This user already received a request.
+		                        document.getElementById("confirmation-message").innerHTML = "Check your notifications!"
+		                        break;
+		                 }
+
+						ocument.getElementById("confirmation").style.visibility = "visible";
+
+		                 setTimeout( function() {
+		                    document.getElementById("confirmation").style.visibility = "hidden";
+		                 }, 3000)
+ 					}
+ 				}
+
+				request.open("POST", "/sendFriendRequest", true);
+				request.setRequestHeader("Content-type", "application/json");
+				request.send(JSON.stringify(sentReceived));
+			}
+		</script>
+	</body>
+</html>
