@@ -75,6 +75,7 @@
         // [END_EXCLUDE]
       });
       createNewUserInDatastore();
+      window.location.replace('/login');
       // [END createwithemail]
     }
 
@@ -120,7 +121,8 @@
         console.log("creating new user");
         const XHR = new XMLHttpRequest();
         var email = document.getElementById('email').value;
-        XHR.open("POST", '/createuser/'+email, true);
+        var newusername = document.getElementById('typeusername').value;
+        XHR.open("POST", '/createuser/'+email+'/'+newusername, true);
         XHR.send();
         sendEmailVerification();
     }
@@ -189,7 +191,7 @@
 	<body>
 
 		<div class="container">
-			<input type="text" id="username" name="username" placeholder="Username">
+			<input type="text" id="typeusername" name="typeusername" placeholder="Username">
           <br/><br/>
 			<input type="text" id="email" name="email" placeholder="Email">
           <br/><br/>
