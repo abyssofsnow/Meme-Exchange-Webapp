@@ -1,19 +1,46 @@
-from flask import Flask, render_template
-app = Flask(__name__)
+from flask import Flask, Request, render_template, request
+from google.auth.transport import requests
+from google.cloud import datastore
+from google.cloud import storage
 
-	
+import google.oauth2.id_token
+import json
+import logging
+import os
+
+
+app = Flask(__name__)
+datastore_client = datastore.Client()
+
+firebase_request_adapter = requests.Request()
+
+#configuring environment variable via app.yaml
+CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
+
+# new user creation from login page
+@app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
+def createuser(newUser, UserName):
+    entity = datastore.Entity(key=datastore_client.key('User', newUser))
+    entity.update({
+        'username': UserName,
+        'bio': '',
+        'friend_request_in': [],
+        'friends': [],
+        'memes': [],
+        'picture': '',
+    })
+    datastore_client.put(entity)
+    return console.log('Create User Success!')
+
 # The home page handler
 @app.route('/')
 def navigate_home():
-	return render_template("home.html")
+    return "Homepage"
 
-@app.route('/home')
-def go_home():
-	return render_template("home.html")
-	
-@app.route('/popularMeme')
-def go_popularMeme():
-	return render_template("popularMeme.html")
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
 
 # The login/registration page handler
 @app.route('/login')
@@ -139,15 +166,26 @@ def upload(image):
     #return updated profile pic
     return None
 
-@app.route('/user/<username>')
-def navigate_user_page():
-	return "User Page"
 
-@app.route('/meme/<meme_id>')
-def navigate_meme_page():
-	return "Meme Page"
+@app.route('/meme/<meme_id>', methods=['GET'])
+def navigate_meme_page(meme_id):
+    # Load the datastore object for the meme.
+    query = datastore_client.query(kind='Meme')
+    query.add_filter('key', '=', meme_id)
+    memes = list(query.fetch())
 
+    if(len(memes) > 0):
+        render_template('meme.html', meme_to_display=memes[0])
+    else:
+        return "Meme not found"
+
+@app.errorhandler(500)
+def server_error(e):
+    logging.exception('An error has occurred')
+    return """
+    An internal error has occurred: <pre>{}</pre>
+    """.format(e), 500
 
 if __name__ == '__main__':
-	app.run()
+    app.run()
 
