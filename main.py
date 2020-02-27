@@ -1,3 +1,4 @@
+
 from flask import Flask, Request, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
@@ -32,14 +33,26 @@ def createuser(newUser, UserName):
     datastore_client.put(entity)
     return console.log('Create User Success!')
 
-# The home page handler
-@app.route('/')
-def navigate_home():
-    return "Homepage"
+
 
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
+
+
+
+# The home page handler
+@app.route('/')
+def navigate_home():
+	return render_template("home.html")
+
+@app.route('/home')
+def go_home():
+	return render_template("home.html")
+	
+@app.route('/popularMeme')
+def go_popularMeme():
+	return render_template("popularMeme.html")
 
 
 # The login/registration page handler
@@ -188,4 +201,5 @@ def server_error(e):
 
 if __name__ == '__main__':
     app.run()
+
 

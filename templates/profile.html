@@ -98,11 +98,13 @@
 			</div>
 		{% endif %}
 
-
+		<div style="display:grid;grid-template-columns: auto auto;">
+			<h4>Memes:</h4>
+			<h4>Friends:</h4>
+		</div>
 		<div style="display:grid;grid-template-columns: auto auto;">
 			{# Show memes and friends #}
 			<div id="memes_list" class="scrollable_list">
-				<h4>Memes:</h4>
 
 				{% for meme in memes_owned %}
 					<div id="meme">
@@ -112,7 +114,6 @@
 			</div>
 
 			<div id="friends_list" class="scrollable_list">
-				<h4>Friends:</h4>
 		        {% for friend in user_to_display.friends %}
 					<div id="friend">
 						<a href="/user/{{friend.username}}">{{ friend.username }}</a> 
