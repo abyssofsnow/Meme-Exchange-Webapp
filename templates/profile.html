@@ -20,7 +20,8 @@
   	        </div>
         </div>
 
-		{% if own_profile == user_to_display %} {# If this is the user's own profile, allow them to edit it. #}
+		<div id="profile_background">
+		{% if identity == user_to_display.username %} {# If this is the user's own profile, allow them to edit it. #}
 			<div id ="own_profile_content">
 
 				<span>
@@ -101,18 +102,18 @@
 		<div style="display:grid;grid-template-columns: auto auto;">
 			{# Show memes and friends #}
 			<div id="memes_list" class="scrollable_list">
+				<h4>Memes:</h4>
 
 				{% for meme in memes_owned %}
-					<h4>Memes:</h4>
 					<div id="meme">
-						<a href="">{{ meme.title }}</a> 
+						<a href="/meme/{{meme.id}}">{{ meme.title }}</a> 
 					</div>
 				{% endfor %}
 			</div>
 
 			<div id="friends_list" class="scrollable_list">
+				<h4>Friends:</h4>
 		        {% for friend in user_to_display.friends %}
-					<h4>Friends</h4>
 					<div id="friend">
 						<a href="/user/{{friend.username}}">{{ friend.username }}</a> 
 					</div>
@@ -169,6 +170,7 @@
 				</form>
 			</div>
 		<section>
+		</div>
 		<script>
 			var identity = '{{ identity }}' //This is who I'm logged in as.
 			var user = {{ safe_user_to_display|safe }}; //I'm storing the data I sent from the server into a JS variable so if I edit the profile,

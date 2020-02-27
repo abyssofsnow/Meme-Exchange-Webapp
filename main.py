@@ -45,29 +45,43 @@ def navigate_login():
 
 @app.route('/user/<username>', methods=['GET'])
 def navigate_user_page(username):
+
+	identity = ''
+
     # Verify Firebase Auth.
     id_token = request.cookies.get("token")
     if id_token:
         try:
             claims = google.oauth2.id_token.verify_firebase_token(id_token, firebase_request_adapter)
+
+			# Load the datastore object for the user visiting the page.
+            key = datastore_client.key('User', claims['email'])
+            user_self = datastore_client.get(key)
+
+            # If the page visitor is logged in, store their identity.
+            if(user_self is not None):
+                identity = user_self['username']
+            else:
+                identity = ''
         except ValueError as exc:
             error_message = str(exc)
 
-    # Load the datastore object for the user.
+    # Query for the user whose profile we're looking for.
     query = datastore_client.query(kind='User')
     query.add_filter('username', '=', username)
-    user_objects = list(query.fetch())
+    user_viewed_list = list(query.fetch())
 
     # If the user is found, use its data to populate the profile.
-    if(len(user_objects) > 0):
+    if(len(user_viewed_list) > 0):
 
-        # Load the memes associated with this user. 
+        user_viewed = user_viewed_list[0]
+
+        # Load the memes associated with the user to be displayed. 
         query = datastore_client.query(kind='Meme')
         query.add_filter('owner', '=', username)
         memes = list(query.fetch())
 
-	user = user_objects[0]
-        return render_template('profile.html', user_to_display=user, safe_user_to_display=json.dumps(user), memes_owned=memes, own_profile=True, identity='Placeholder') #For now, it will always act like it's the user's own profile.
+        return render_template('profile.html', user_to_display=user_viewed, safe_user_to_display=json.dumps(user_viewed), memes_owned=memes, identity=identity)
     else:
         return "User not found"
 
