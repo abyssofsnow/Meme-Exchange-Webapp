@@ -122,17 +122,9 @@
         var email = document.getElementById('email').value;
         XHR.open("POST", '/createuser/'+email, true);
         XHR.send();
-        
+        sendEmailVerification();
     }
 
-    function redirectSignUp(){
-        if (firebase.auth().currentUser) {
-            // [START signout]
-            firebase.auth().signOut();
-            // [END signout]
-            }
-        window.location.replace('/signup/');
-	}
     /**
      * initApp handles setting up UI event listeners and registering Firebase auth listeners:
      *  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
@@ -186,10 +178,7 @@
       });
       // [END authstatelistener]
 
-      document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false);
-      document.getElementById('quickstart-sign-up').addEventListener('click', redirectSignUp, false);
-      document.getElementById('quickstart-verify-email').addEventListener('click', sendEmailVerification, false);
-      document.getElementById('quickstart-password-reset').addEventListener('click', sendPasswordReset, false);
+      document.getElementById('quickstart-sign-up').addEventListener('click', handleSignUp, false);
     }
 
     window.onload = function() {
@@ -200,30 +189,16 @@
 	<body>
 
 		<div class="container">
+			<input type="text" id="username" name="username" placeholder="Username">
+          <br/><br/>
 			<input type="text" id="email" name="email" placeholder="Email">
-          &nbsp;&nbsp;&nbsp;
+          <br/><br/>
 			<input type="password" id="password" name="password" placeholder="Password">
           <br/><br/>
-			<button disabled id="quickstart-sign-in" name="signin">
-				Sign In
-			</button>
-          &nbsp;&nbsp;&nbsp;
 			<button id="quickstart-sign-up" name="signup">
 				Sign Up
 			</button>
-          &nbsp;&nbsp;&nbsp;
-			<button disabled id="quickstart-verify-email" name="verify-email">
-				Send Email Verification
-			</button>
-          &nbsp;&nbsp;&nbsp;
-			<button id="quickstart-password-reset" name="verify-email">
-				Send Password Reset Email
-			</button>
-          &nbsp;&nbsp;&nbsp;
           <br/><br/>
-          <button disabled id="quickstart-sign-out" name="sign-out">
-				Sign Out
-			</button>
 		</div>
         <div class="quickstart-user-details-container">
             Firebase sign-in status: <span id="quickstart-sign-in-status">Unknown</span>
