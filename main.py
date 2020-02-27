@@ -37,6 +37,11 @@ def createuser(newUser):
 def navigate_home():
     return "Homepage"
 
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+
 # The login/registration page handler
 @app.route('/login')
 def navigate_login():
