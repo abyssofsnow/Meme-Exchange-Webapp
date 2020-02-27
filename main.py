@@ -1,29 +1,11 @@
-from flask import Flask, Request, render_template, request
-from google.auth.transport import requests
-from google.cloud import datastore
-from google.cloud import storage
-
-import google.oauth2.id_token
-import json
-import logging
-import os
-
-
+from flask import Flask, render_template
 app = Flask(__name__)
-<<<<<<< HEAD
 datastore_client = datastore.Client('memes-marketplace')
-=======
-datastore_client = datastore.Client()
->>>>>>> parent of 6cb3d59... Merge branch 'MainPage-MenuBar'
 
 firebase_request_adapter = requests.Request()
 
 #configuring environment variable via app.yaml
-<<<<<<< HEAD
 #CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
-=======
-CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
->>>>>>> parent of 6cb3d59... Merge branch 'MainPage-MenuBar'
 
 # new user creation from login page
 @app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
@@ -38,21 +20,21 @@ def createuser(newUser, UserName):
         'picture': '',
     })
     datastore_client.put(entity)
-<<<<<<< HEAD
     return "Create User Success!"
-=======
-    return console.log('Create User Success!')
->>>>>>> parent of 6cb3d59... Merge branch 'MainPage-MenuBar'
 
+	
 # The home page handler
 @app.route('/')
 def navigate_home():
-    return "Homepage"
+	return render_template("home.html")
 
-@app.route('/signup')
-def signup():
-    return render_template('signup.html')
-
+@app.route('/home')
+def go_home():
+	return render_template("home.html")
+	
+@app.route('/popularMeme')
+def go_popularMeme():
+	return render_template("popularMeme.html")
 
 # The login/registration page handler
 @app.route('/login')
@@ -178,26 +160,15 @@ def upload(image):
     #return updated profile pic
     return None
 
+@app.route('/user/<username>')
+def navigate_user_page():
+	return "User Page"
 
-@app.route('/meme/<meme_id>', methods=['GET'])
-def navigate_meme_page(meme_id):
-    # Load the datastore object for the meme.
-    query = datastore_client.query(kind='Meme')
-    query.add_filter('key', '=', meme_id)
-    memes = list(query.fetch())
+@app.route('/meme/<meme_id>')
+def navigate_meme_page():
+	return "Meme Page"
 
-    if(len(memes) > 0):
-        render_template('meme.html', meme_to_display=memes[0])
-    else:
-        return "Meme not found"
-
-@app.errorhandler(500)
-def server_error(e):
-    logging.exception('An error has occurred')
-    return """
-    An internal error has occurred: <pre>{}</pre>
-    """.format(e), 500
 
 if __name__ == '__main__':
-    app.run()
+	app.run()
 

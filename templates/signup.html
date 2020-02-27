@@ -74,15 +74,10 @@
         console.log(error);
         // [END_EXCLUDE]
       });
-<<<<<<< HEAD
       setTimeout(() => {toggleSignIn();}, 500);
       setTimeout(() => {sendEmailVerification();}, 750);
       setTimeout(() => {createNewUserInDatastore();}, 1000);
       setTimeout(() => {window.location.replace('/login');}, 1500);
-=======
-      createNewUserInDatastore();
-      window.location.replace('/login');
->>>>>>> parent of 6cb3d59... Merge branch 'MainPage-MenuBar'
       // [END createwithemail]
     }
 
@@ -131,10 +126,6 @@
         var newusername = document.getElementById('typeusername').value;
         XHR.open("POST", '/createuser/'+email+'/'+newusername, true);
         XHR.send();
-<<<<<<< HEAD
-=======
-        sendEmailVerification();
->>>>>>> parent of 6cb3d59... Merge branch 'MainPage-MenuBar'
     }
 
     /**
