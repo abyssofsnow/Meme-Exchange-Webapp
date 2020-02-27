@@ -10,12 +10,12 @@ import os
 
 
 app = Flask(__name__)
-datastore_client = datastore.Client()
+datastore_client = datastore.Client('memes-marketplace')
 
 firebase_request_adapter = requests.Request()
 
 #configuring environment variable via app.yaml
-CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
+#CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 
 # new user creation from login page
 @app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
@@ -30,7 +30,7 @@ def createuser(newUser, UserName):
         'picture': '',
     })
     datastore_client.put(entity)
-    return console.log('Create User Success!')
+    return "Create User Success!"
 
 # The home page handler
 @app.route('/')

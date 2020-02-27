@@ -74,8 +74,10 @@
         console.log(error);
         // [END_EXCLUDE]
       });
-      createNewUserInDatastore();
-      window.location.replace('/login');
+      setTimeout(() => {toggleSignIn();}, 500);
+      setTimeout(() => {sendEmailVerification();}, 750);
+      setTimeout(() => {createNewUserInDatastore();}, 1000);
+      setTimeout(() => {window.location.replace('/login');}, 1500);
       // [END createwithemail]
     }
 
@@ -124,7 +126,6 @@
         var newusername = document.getElementById('typeusername').value;
         XHR.open("POST", '/createuser/'+email+'/'+newusername, true);
         XHR.send();
-        sendEmailVerification();
     }
 
     /**
