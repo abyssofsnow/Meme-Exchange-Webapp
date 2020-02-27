@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, Response, abort, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
-#from google.cloud import storage
+from google.cloud import storage
 
 import google.oauth2.id_token
 import json
@@ -14,7 +14,7 @@ datastore_client = datastore.Client()
 firebase_request_adapter = requests.Request()
 
 #configuring environment variable via app.yaml
-#CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
+CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 
 # new user creation from login page
 @app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
