@@ -214,6 +214,17 @@
 			<div id="profileEdit" class="collapse">
 			
 				<h1>Profile Settings<h1>
+				<form action="/uploadImage" method="POST">
+					<div>
+						<label for:"fileUpload">
+							<font face="Papyrus" size="3">Upload New Photo </font>
+						</label>
+						<input type="file" id="img" name="fileUpload" accept="image/*">
+					</div>
+					<div>
+						<button on-click="profileImg(username)">Submit</button>
+					</div>
+				</form>
 				<form action = "/profileform" method="POST" autocomplete="off">
 				
 					<section>
@@ -237,12 +248,12 @@
 						<input name="username" id="username">
 					</section>
 					
-					<section>
-						<label>
+					<p><label>
 							<font face="Papyrus" size="3">Please enter your bio: </font>
 						</label><br>
-						<textarea cols="30" rows="8" name="bio" id="bio">What type of memer are you?</textarea>
-					</section>
+					</p>
+					<textarea cols="30" rows="8" name="bio" id="bio">What type of memer are you?</textarea>
+					
 					
 				<button on-click="profileExist(username)">Save</button>
 				</form>
