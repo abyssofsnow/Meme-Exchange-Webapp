@@ -1,7 +1,7 @@
 from flask import Flask
 from google.auth.transport import requests
 from google.cloud import datastore
-from google.cloud import storage
+#from google.cloud import storage
 
 import google.oauth2.id_token
 import json
