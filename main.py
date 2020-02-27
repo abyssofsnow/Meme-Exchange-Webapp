@@ -61,7 +61,8 @@ def navigate_user_page(username):
         query.add_filter('owner', '=', username)
         memes = list(query.fetch())
 
-        return render_template('profile.html', user_to_display=user_objects[0], memes_owned=memes, own_profile=True) #For now, it will always act like it's the user's own profile.
+		user = user_objects[0]
+        return render_template('profile.html', user_to_display=user, safe_user_to_display=json.dumps(user), memes_owned=memes, own_profile=True) #For now, it will always act like it's the user's own profile.
     else:
         return "User not found"
 
