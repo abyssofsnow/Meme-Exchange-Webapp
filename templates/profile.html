@@ -4,6 +4,8 @@
 
 		<title>{{ user_to_display.username }}'s Profile </title>
 
+		<link rel="stylesheet" href="/static/profile_stylesheet.css">
+
 
 		<script src="https://apis.google.com/js/client.js"> //This is our JS.
 			var identity = {{ own_profile }} //This is who I'm logged in as.
@@ -51,6 +53,11 @@
                                 document.getElementById("confirmation-message").innerHTML = "Check your notifications!"
                                 break;
                          }
+
+						document.getElementById("confirmation").style.display = inline;
+                         setTimeout( function() {
+                            document.getElementById("confirmation").style.display = none;
+                         }, 3000)
  					}
  				}
 
@@ -120,7 +127,7 @@
 	</head>
 	<body>
         <div id="confirmation">
-            <h3 style="margin-top:0;">Header</h3>
+            <h3 style="margin-top:0;">Status</h3>
 
 	        <div class="confirmation-message">
     	        Friend Request Sent!
@@ -192,22 +199,25 @@
 			</div>
 		{% endif %}
 
-		{# Show memes and friends #}
-		<div id="memes_list">
 
-			{% for meme in memes_owned %}
-				<div id="meme">
-					<a href="">{{ meme.title }}</a> 
-				</div>
-			{% endfor %}
-		</div>
+		<div style="display:grid;grid-template-columns: auto auto;">
+			{# Show memes and friends #}
+			<div id="memes_list" class="scrollable_list">
 
-		<div id="friends_list">
-            {% for friend in user.friends %}
-				<div id="friend">
-					<a href="/user/{{friend.username}}">{{ friend.username }}</a> 
-				</div>
-			{% endfor %}
+				{% for meme in memes_owned %}
+					<div id="meme">
+						<a href="">{{ meme.title }}</a> 
+					</div>
+				{% endfor %}
+			</div>
+
+			<div id="friends_list" class="scrollable_list">
+		        {% for friend in user.friends %}
+					<div id="friend">
+						<a href="/user/{{friend.username}}">{{ friend.username }}</a> 
+					</div>
+				{% endfor %}
+			</div>
 		</div>
 		
 		<section>
