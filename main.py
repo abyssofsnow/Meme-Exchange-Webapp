@@ -22,7 +22,12 @@ CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 def createuser(newUser):
     entity = datastore.Entity(key=datastore_client.key('User', newUser))
     entity.update({
-        'username': newUser
+        'username': newUser,
+        'bio': '',
+        'friend_request_in': [],
+        'friends': [],
+        'memes': [],
+        'picture': '',
     })
     datastore_client.put(entity)
     return render_template('login.html')
@@ -61,7 +66,7 @@ def navigate_user_page(username):
         query.add_filter('owner', '=', username)
         memes = list(query.fetch())
 
-		user = user_objects[0]
+	user = user_objects[0]
         return render_template('profile.html', user_to_display=user, safe_user_to_display=json.dumps(user), memes_owned=memes, own_profile=True, identity='Placeholder') #For now, it will always act like it's the user's own profile.
     else:
         return "User not found"
@@ -73,9 +78,9 @@ def update_user_page(username):
 
 
 @app.route('/sendFriendRequest', methods=['POST'])
-def send_friend_request(username):
-    sender = request.form['sender']
-    receiver = request.form['receiver']
+def send_friend_request():
+    sender = request.json['sender']
+    receiver = request.json['receiver']
 
 
     # Check that this user hasn't already received a friend request from recip.
@@ -83,24 +88,24 @@ def send_friend_request(username):
     query.add_filter('username', '=', sender)
     sender_objects = list(query.fetch())
 
-    # Return error if this user already has friend request.
-    for friend_request in sender_objects[0].friend_request_in:
+    sender_obj = sender_objects[0]
+    for friend_request in sender_obj['friend_request_in']:
         if(friend_request == receiver):
             return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
 
-    # Check that this user hasn't already sent a friend request 
-    # from this user.
     query = datastore_client.query(kind='User')
     query.add_filter('username', '=', receiver)
     receiver_objects = list(query.fetch())
 
+
+    receiver_obj = receiver_objects[0]
     # Return error if this user already sent friend request.
-    for friend_request in receiver_objects[0].friend_request_in:
+    for friend_request in receiver_obj['friend_request_in']:
         if(friend_request == sender):
             return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
 
     # Return error if they are already friends.
-    for friend_request in sender_objects[0].friends:
+    for friend_entry in sender_obj['friends']:
         if(friend_request == receiver):
             return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
 
@@ -111,9 +116,10 @@ def send_friend_request(username):
             task = datastore_client.get(key)
 
             # Add the sender to the receiver's pending invites
-            task['friend_request_in'] = receiver_objects[0].friend_request_in.append(sender)
+            task['friend_request_in'] = receiver_obj['friend_request_in'].append(sender)
 
             datastore_client.put(task)
+
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'} 
 

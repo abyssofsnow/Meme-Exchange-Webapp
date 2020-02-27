@@ -15,7 +15,7 @@
         <div id="confirmation">
             <h3 style="margin-top:0;">Status</h3>
 
-	        <div class="confirmation-message">
+	        <div id="confirmation-message">
     	        Friend Request Sent!
   	        </div>
         </div>
@@ -39,7 +39,7 @@
                 </script>
 
 				{# Present image #}
-				<img id="profile_picture" src="example_pic.jpg" alt="Profile Piture">
+				<img id="profile_picture" src="example_pic.jpg" alt="Profile Picture">
 
 
 				{# If we're in editing mode, give the user the ability to edit their picture and bio. #}
@@ -66,7 +66,7 @@
 				<div id="present_mode_content">
 					
 					{# Present Bio #}
-					<p>Bio: {{ user.bio }}</p>
+					<p>Bio: {{ user_to_display.bio }}</p>
 
 					
 				</div>
@@ -74,22 +74,22 @@
 			</div>
 		{% else %}
 			<div id="other_profile_content">
-				<img id="profile_picture" src="example_pic.jpg" alt="Profile Piture">
 
-				<span>
-					<h2 id="username">{{ user.username }}</h2>
-					{% if identity != '' %}
-						<button id="add_friend_button" on-click="addFriend()">Add Friend</button>
-					{% endif %}
-				</span>
+				
+				<h2 id="username">{{ user_to_display.username }}</h2>
+				{% if identity != '' %}
+					<button id="add_friend_button" onclick="addFriend()">Add Friend</button>
+				{% endif %}
+				
 
-				<img id="profile_picture" src="example_pic.jpg" alt="Profile Piture">
+				<img id="profile_picture" src="/static/placeholder.jpg" alt="Profile Picture">
 			
 				{# Present the user's Bio #}
-				{% if user.bio != '' %}
+				<h4 style="margin-bottom:0;">Bio:</h4>
+				{% if user_to_display.bio != '' %}
 					<p>User has no bio! :(</p>
 				{% else %}
-					<p>{{ user.bio }}</p>
+					<p>{{ user_to_display.bio }}</p>
 				{% endif %}
 			
 
@@ -103,6 +103,7 @@
 			<div id="memes_list" class="scrollable_list">
 
 				{% for meme in memes_owned %}
+					<h4>Memes:</h4>
 					<div id="meme">
 						<a href="">{{ meme.title }}</a> 
 					</div>
@@ -110,7 +111,8 @@
 			</div>
 
 			<div id="friends_list" class="scrollable_list">
-		        {% for friend in user.friends %}
+		        {% for friend in user_to_display.friends %}
+					<h4>Friends</h4>
 					<div id="friend">
 						<a href="/user/{{friend.username}}">{{ friend.username }}</a> 
 					</div>
@@ -119,7 +121,7 @@
 		</div>
 		
 		<section>
-			<div id="profileEdit" class="collapse">
+			<div id="profileEdit" class="collapse" style="display:none;">
 			
 				<h1>Profile Settings<h1>
 				<form action="/uploadImage" method="POST">
@@ -172,9 +174,6 @@
 			var user = {{ safe_user_to_display|safe }}; //I'm storing the data I sent from the server into a JS variable so if I edit the profile,
 												//I don't have to requery the DB.
 			 
-			//Initially don't show edit mode.
-			document.getElementById("edit_mode_content").style.display = "none"; 
-  			document.getElementById("profileEdit").style.display = "none"; 
 
 			function createXmlHttp() {
 				let xmlhttp;
@@ -242,7 +241,6 @@
 			function addFriend() {
 				//Set up xmlhttprequest object.
 				var request = createXmlHttp();
-				var potentialFriends = [identity, user.username]; //Sender of the request (me), Recipient of the request (user diplayed).
 
 				request.onreadystatechange = function() {
  					if (request.readyState == 4) {
@@ -264,16 +262,17 @@
 		                        break;
 		                 }
 
-						document.getElementById("confirmation").style.display = inline;
+						ocument.getElementById("confirmation").style.visibility = "visible";
+
 		                 setTimeout( function() {
-		                    document.getElementById("confirmation").style.display = none;
+		                    document.getElementById("confirmation").style.visibility = "hidden";
 		                 }, 3000)
  					}
  				}
 
 				request.open("POST", "/sendFriendRequest", true);
-				xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-				request.send("sender=" + identity + "&receiver=" + user.username);
+				request.setRequestHeader("Content-type", "application/json");
+				request.send(JSON.stringify(sentReceived));
 			}
 		</script>
 	</body>
