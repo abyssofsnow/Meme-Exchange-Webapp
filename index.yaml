@@ -1,6 +1,0 @@
-indexes:
-    
-- kind: User
-  properties:
-  - name: username
-    direction: asc
