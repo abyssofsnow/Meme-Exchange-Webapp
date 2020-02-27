@@ -156,28 +156,31 @@ def send_friend_request():
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
-
+"""
 @app.route('/uploadImage', methods=['POST'])
 def upload(image):
-    #processing and uploading image to GCS
-    uploadedImg = request.files.get('file')
+    	#processing and uploading image to GCS
+	uploadedImg = request.files.get('file')
 
-    if not uploadedImg:
-        return 'Upload unsuccessful', 400
+	if not uploadedImg:
+		return 'Upload unsuccessful', 400
 
-    #creating cloud storage client
-    client = storage.Client()
+	#creating cloud storage client
+	client = storage.Client()
 
-    #getting bucket to upload to
-    bucket2load = client.get_bucket(CLOUD_STORAGE_BUCKET)
+	#getting bucket to upload to, environment declared in app.yaml 
+	bucket2load = client.get_bucket('{CLOUD_STORAGE_BUCKET}/Users/{username}')	
 
-    #creating blob and uploading image
-    blob = bucket2load.blob(uploadedImg.filename)
-    blob.uploaded_from_string(uploadedImg, content_type='image/*')
+	#creating new blob and uploading image
+	link = "/Users/" + username
+	blob = bucket2load.blob(uploadedImg.filename)
 
-    #return updated profile pic
-    return None
+	#upload from file link from profile.html ex:'D:/Download/.pdf'
+	blob.uploaded_from_string(data=uploadedImg, content_type='image/*', client=client)
 
+	#profile pic can now be accessed via HTTP
+	return blob.public_url
+"""
 
 @app.route('/meme/<meme_id>', methods=['GET'])
 def navigate_meme_page(meme_id):
