@@ -18,11 +18,11 @@ firebase_request_adapter = requests.Request()
 CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 
 # new user creation from login page
-@app.route('/createuser/<newUser>', methods=['POST'])
-def createuser(newUser):
+@app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
+def createuser(newUser, UserName):
     entity = datastore.Entity(key=datastore_client.key('User', newUser))
     entity.update({
-        'username': newUser,
+        'username': UserName,
         'bio': '',
         'friend_request_in': [],
         'friends': [],
@@ -30,12 +30,17 @@ def createuser(newUser):
         'picture': '',
     })
     datastore_client.put(entity)
-    return render_template('login.html')
+    return console.log('Create User Success!')
 
 # The home page handler
 @app.route('/')
 def navigate_home():
     return "Homepage"
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
 
 # The login/registration page handler
 @app.route('/login')
