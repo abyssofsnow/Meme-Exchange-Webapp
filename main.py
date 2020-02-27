@@ -14,7 +14,7 @@ datastore_client = datastore.Client()
 firebase_request_adapter = requests.Request()
 
 #configuring environment variable via app.yaml
-CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
+#CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 
 # new user creation from login page
 @app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
