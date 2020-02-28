@@ -17,6 +17,7 @@ firebase_request_adapter = requests.Request()
 #configuring environment variable via app.yaml
 #CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 
+# Tim's section {
 # new user creation from login page
 @app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
 def createuser(newUser, UserName):
@@ -47,6 +48,15 @@ def readiness_check():
 def liveness_check():
     return 'OK'
 
+# The login/registration page handler
+@app.route('/login')
+def navigate_login():
+	return render_template('login.html')
+
+# } Tim's section end. ===================================================
+
+
+# Kyle's section here { ================================================
 # The home page handler
 @app.route('/')
 def navigate_home():
@@ -61,12 +71,10 @@ def go_popularMeme():
 	return render_template("popularMeme.html")
 
 
-# The login/registration page handler
-@app.route('/login')
-def navigate_login():
-	return render_template('login.html')
+# } End Kyle's section ==========================================
 
 
+# Beginning Emily's section ===========================================
 @app.route('/user/<username>', methods=['GET'])
 def navigate_user_page(username):
 
@@ -165,6 +173,22 @@ def send_friend_request():
 	return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
 
+@app.route('/meme/<meme_id>', methods=['GET'])
+def navigate_meme_page(meme_id):
+	# Load the datastore object for the meme.
+	query = datastore_client.query(kind='Meme')
+	query.add_filter('key', '=', meme_id)
+	memes = list(query.fetch())
+
+	if(len(memes) > 0):
+		render_template('meme.html', meme_to_display=memes[0])
+	else:
+		return "Meme not found"
+
+# } End Emily's Section ================================================
+
+
+# Beginning of Jingjing's section { =================================================
 @app.route('/uploadImage', methods=['POST'])
 def upload(image):
 		#processing and uploading image to GCS
@@ -190,17 +214,7 @@ def upload(image):
 	return blob.public_url
 
 
-@app.route('/meme/<meme_id>', methods=['GET'])
-def navigate_meme_page(meme_id):
-	# Load the datastore object for the meme.
-	query = datastore_client.query(kind='Meme')
-	query.add_filter('key', '=', meme_id)
-	memes = list(query.fetch())
-
-	if(len(memes) > 0):
-		render_template('meme.html', meme_to_display=memes[0])
-	else:
-		return "Meme not found"
+# } End Jingjing's section =====================================
 
 @app.errorhandler(500)
 def server_error(e):
