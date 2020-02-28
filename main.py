@@ -1,13 +1,19 @@
+<<<<<<< HEAD
 from google.auth.transport import requests
 from google.cloud import datastore
 from google.cloud import storage
 from flask import Flask, Request, render_template, request
+=======
+from flask import Flask, Response, abort, render_template, request
+from google.auth.transport import requests
+from google.cloud import datastore
+#from google.cloud import storage
+>>>>>>> e8be13da7e0645246eaa5ae78153b65891e760a5
 
 import google.oauth2.id_token
 import json
 import logging
 import os
-
 
 app = Flask(__name__)
 datastore_client = datastore.Client('memes-marketplace')
