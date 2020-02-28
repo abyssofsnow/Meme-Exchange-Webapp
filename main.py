@@ -1,3 +1,4 @@
+
 from flask import Flask, Response, abort, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
@@ -9,7 +10,7 @@ import logging
 import os
 
 app = Flask(__name__)
-datastore_client = datastore.Client()
+datastore_client = datastore.Client('memes-marketplace')
 
 firebase_request_adapter = requests.Request()
 
@@ -29,7 +30,7 @@ def createuser(newUser, UserName):
 		'picture': '',
 	})
 	datastore_client.put(entity)
-	return console.log('Create User Success!')
+	return 'Create User Success!'
 
 
 
@@ -37,6 +38,14 @@ def createuser(newUser, UserName):
 def signup():
 	return render_template('signup.html')
 
+
+@app.route('/readiness_check', methods=['GET'])
+def readiness_check():
+    return 'OK'
+
+@app.route('/liveness_check', methods=['GET'])
+def liveness_check():
+    return 'OK'
 
 # The home page handler
 @app.route('/')
@@ -155,7 +164,7 @@ def send_friend_request():
 
 	return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
-"""
+
 @app.route('/uploadImage', methods=['POST'])
 def upload(image):
 		#processing and uploading image to GCS
@@ -179,7 +188,7 @@ def upload(image):
 
 	#profile pic can now be accessed via HTTP
 	return blob.public_url
-"""
+
 
 @app.route('/meme/<meme_id>', methods=['GET'])
 def navigate_meme_page(meme_id):
