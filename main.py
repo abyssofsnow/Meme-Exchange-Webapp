@@ -1,7 +1,7 @@
-quest
 from google.auth.transport import requests
 from google.cloud import datastore
 from google.cloud import storage
+from flask import Flask, Request, render_template, request
 
 import google.oauth2.id_token
 import json
@@ -10,12 +10,12 @@ import os
 
 
 app = Flask(__name__)
-datastore_client = datastore.Client()
+datastore_client = datastore.Client('memes-marketplace')
 
 firebase_request_adapter = requests.Request()
 
 #configuring environment variable via app.yaml
-CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
+#CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
 
 # new user creation from login page
 @app.route('/createuser/<newUser>/<UserName>', methods=['POST'])
@@ -30,7 +30,7 @@ def createuser(newUser, UserName):
 		'picture': '',
 	})
 	datastore_client.put(entity)
-	return console.log('Create User Success!')
+	return 'Create User Success!'
 
 
 
@@ -38,6 +38,14 @@ def createuser(newUser, UserName):
 def signup():
 	return render_template('signup.html')
 
+
+@app.route('/readiness_check', methods=['GET'])
+def readiness_check():
+    return 'OK'
+
+@app.route('/liveness_check', methods=['GET'])
+def liveness_check():
+    return 'OK'
 
 # The home page handler
 @app.route('/')
