@@ -1,8 +1,40 @@
 
-
-<link rel="stylesheet" href="{{ url_for('static',filename='topNavCss.css') }}">
-<div class="topnav" id="memeTopNav">
-  <a href="home">Home</a>
-  <a href="popularMeme">PopularMeme</a>
-  <a href="login" id = "pf" style="float:right">Profile</a>
-</div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+        </button>
+        <a class="navbar-brand" href="#">Meme Exchange</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+        <li class="active"><a href="home">Home</a></li>
+        <li><a href="#">Notifications</a></li>
+        </ul>
+        <form class="navbar-form navbar-right" role="search">
+        <div class="form-group input-group">
+            <input type="text" class="form-control" placeholder="Search..">
+            <span class="input-group-btn">
+            <button class="btn btn-default" type="button">
+                <span class="glyphicon glyphicon-search"></span>
+            </button>
+            </span>        
+        </div>
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+        {% if tempId is defined %}
+            <li><a href="login">{{tempId}}<span class="glyphicon glyphicon-user"></span>Log Out</a></li>
+        {% else %}
+            <li><a href="login"><span class="glyphicon glyphicon-user"></span>Log in</a></li>
+        {% endif %}
+        </ul>
+    </div>
+    </div>
+</nav>
+  
