@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+        <link rel="stylesheet" href="/static/profile_stylesheet.css">
+
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+		<script src="https://apis.google.com/js/client.js">
+	</head>
+	<body>
+
+		{% include 'topNav.html' %}
+
+        <div class="container">    
+		    <div class="row">
+		        <div class="col-sm-12 well">
+		            <div class="well">
+                        <img src="" alt="Meme">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+		        <div class="col-sm-8 well">
+		            <div class="well">
+                        <h4>
+                            Owner: <a href="/user/{{ meme_to_display.owner }}"> {{meme_to_display.owner}}</a>
+                        </h4>
+                    </div>
+                </div>
+                <div class="col-sm-4 well">
+		            <div class="well">
+                        <button onclick="window.location.href = '/trade/{{meme_to_display.id}}';">
+                            Trade For This Meme
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+	
+	</body>
+
+</html>

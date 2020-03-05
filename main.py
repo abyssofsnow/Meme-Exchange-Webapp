@@ -25,9 +25,6 @@ def createuser(newUser, UserName):
 	entity.update({
 		'username': UserName,
 		'bio': '',
-		'friend_request_in': [],
-		'friends': [],
-		'memes': [],
 		'picture': '',
 	})
 	datastore_client.put(entity)
@@ -177,10 +174,13 @@ def send_friend_request():
 def navigate_meme_page(meme_id):
 	# Load the datastore object for the meme.
 	query = datastore_client.query(kind='Meme')
-	query.add_filter('key', '=', meme_id)
+	query.add_filter('id', '=', meme_id)
 	memes = list(query.fetch())
 
+
 	if(len(memes) > 0):
+        #Use the picture id to look up the picture in Firestore
+
 		render_template('meme.html', meme_to_display=memes[0])
 	else:
 		return "Meme not found"
