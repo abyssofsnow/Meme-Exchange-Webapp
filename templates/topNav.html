@@ -16,8 +16,10 @@
         <ul class="nav navbar-nav">
         {% if tempId is defined %}
             <li class="active"><a href="{{tempId}}/home">Home</a></li>
+            <li><a href="{{tempId}}/notification">Notifications</a></li>
         {% else %}
             <li class="active"><a href="home">Home</a></li>
+            <li><a href="notificationSN">Notifications</a></li>
         {% endif %}
         <li><a href="{{tempId}}/notification">Notifications</a></li>
         </ul>

@@ -79,6 +79,10 @@ def go_user_notification(username):
 def go_user_home(username):
 	return render_template("home.html",username=username)
 
+@app.route('/user/<username>/home', methods=['GET'])
+def go_user_home(username):
+	return render_template("home.html",username=username)
+
 # } End Kyle's section ==========================================
 
 
