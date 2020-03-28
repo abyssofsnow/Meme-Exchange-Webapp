@@ -66,6 +66,10 @@ def go_home():
 @app.route('/popularMeme')
 def go_popularMeme():
 	return render_template("popularMeme.html")
+	
+@app.route('/notification')
+def go_notification():
+	return render_template("notification.html")
 
 
 # } End Kyle's section ==========================================
