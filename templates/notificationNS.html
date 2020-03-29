@@ -1,2 +1,47 @@
-{% include 'topNav.html' %}
-<p> sign in to view notification <p>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style> 
+<head>
+	  <title>Meme Exchange</title>
+	  <meta charset="utf-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	  <style> 
+	  
+		/*incorporating the parallax scrolling effect*/
+		.parallax {
+		  /* The image used 
+		  background-image: url("parallax.jpg");*/
+
+		  /* Set a specific height */
+		  min-height: 500px; 
+
+		  /* Create the parallax scrolling effect */
+		  background-attachment: fixed;
+		  background-position: center;
+		  background-repeat: no-repeat;
+		  background-size: cover;
+		}
+		body{
+		  /*background-color: #1F4080;*/
+		}
+		/* Set black background color, white text and some padding */
+		footer {
+		  background-color: #555;
+		  color: white;
+		  padding: 15px;
+		}
+		
+	  </style>
+	</head>
+
+</style>
+<body>
+    {% include 'topNav.html' %}
+    <p> sign in to view notification <p>
+</body>
