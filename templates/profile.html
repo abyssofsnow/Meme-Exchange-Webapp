@@ -56,7 +56,7 @@
             {% if identity == user_to_display.username %}
                 <button id="edit_profile_button" data-toggle="modal" data-target="#editProfile" style="margin-top:15px">Edit Profile</button>
 			{% elif identity != '' %}
-                <button id="add_friend_button">Add Friend</button>
+                <button id="add_friend_button" onclick="addFriend()">Add Friend</button>
 			{% endif %}
 			</div>
 
@@ -139,8 +139,6 @@
 			var user = {{ safe_user_to_display|safe }}; //I'm storing the data I sent from the server into a JS variable so if I edit the profile,
 												//I don't have to requery the DB.
 
-			 
-            document.getElementById("add_friend_button").addEventListener("click", addFriend, false);
 
 
 			function createXmlHttp() {

@@ -1,20 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>Meme Upload</title>
-		<style media="screen">
-			body{
-				display: flex;
-				min-height: 90vh;
-				width: 100%;
-				padding: 0;
-				margin: 0;
-				align-items: center;
-				justify-content: center;
-				flex-direction: column;	
-				background-color: whitesmoke;
-			}
-		</style>	
+		<title>Meme Upload</title>	
 	</head>
 
 	<body>
@@ -25,7 +12,7 @@
 		<section align="left">
 			<input type="file" id="meme" name="fileUpload" accept="image/*"/>
 			<input type="text" id="memeTitle" placeholder="Title Your Meme">
-			<button onclick="submitForm()" id="submit">Submit</button>
+			<button onclick="saveMeme()" id="submit">Submit</button>
 		</section>
 	</body>
 	

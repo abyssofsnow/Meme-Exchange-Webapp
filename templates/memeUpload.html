@@ -1,153 +1,94 @@
-<!DOCTYPE html>
-
-<!--Daijue Dong, Meme Exchange Website, Date Created: 3/07/20, Last Modified: 3/29/20----->
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>Meme Upload</title>
-		<style media="screen">
-			body{
-				display: flex;
-				min-height: 90vh;
-				width: 100%;
-				padding: 0;
-				margin: 0;
-				align-items: center;
-				justify-content: center;
-				flex-direction: column;	
-				background-color: whitesmoke;
-			}
-		</style>	
+		<title>Meme Upload</title>	
 	</head>
 
 	<body>
+		{% include 'topNav.html' %}
+		
 		<h1><font face="Papyrus">Lets Begin Memeing</font></h1>
 		<br/>
 		<section align="left">
-			<input type="text" id="username" placeholder="Username">
 			<input type="file" id="meme" name="fileUpload" accept="image/*"/>
-			<input type="text" id="memeCaption" placeholder="Write a meme caption">
-			<input type="text" id="memeTitle" placeholder="Memetitle">
-			<button onclick="submitForm()" id="submit">Submit</button>
+			<input type="text" id="memeTitle" placeholder="Title Your Meme">
+			<button onclick="saveMeme()" id="submit">Submit</button>
 		</section>
 	</body>
 	
-	<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-app.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-storage.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-auth.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
 	
 	<script>
-		//Firebase configuration
-		var firebaseConfig = {
-		  apiKey: "AIzaSyAzaJ2JLSRSyjFkTcsQWE1mCBQ0ZqrUAKg",
-		  authDomain: "meme-marketplace-auth.firebaseapp.com",
-		  databaseURL: "https://meme-marketplace-auth.firebaseio.com",
-		  projectId: "meme-marketplace-auth",
-		  storageBucket: "meme-marketplace-auth.appspot.com",
-		  messagingSenderId: "800243971683",
-		  appId: "1:800243971683:web:d17e0dc768bc038ce6ea56",
-		  measurementId: "G-8JWEM1E8Q2"
-		};
-		// Initialize Firebase
-		firebase.initializeApp(firebaseConfig);
-		console.log(firebase);
-		
-		var user = firebase.auth().currentUser;
-		var name, uid, profile, username;
-		var memeinfo = firebase.database().ref('Memes');
-		
-		
-		function submitForm(){
-			// Get values
-			var memeCaption = document.getElementById('memeCaption').value;
-			var memeTitle = document.getElementById('memeTitle').value;
-			var username = document.getElementById('username').value;
-			var url = encodeURI(memeStorage());
+			
 
+		var memeID; //This will be the id that datastore gives to the meme, so we can navigate to it when it's uploaded.
+		
+		function saveMeme(){
+			// Get title and picture of meme.
+			var memeTitle = document.getElementById('memeTitle').value;
+			var picture = document.getElementById('meme').files[0];
+
+			//Create the JSON version.
+            var jsonMemeInfo = JSON.stringify({"title": memeTitle, "filename": picture.name, "contentType": picture.type});
 			
-			
-			//call function saveinfo
-			saveInfo(memeCaption, memeTitle, username, url);
-			
-			document.getElementById('submit').innerHTML = "Uploaded!";
+			//Send POST request to save the meme in data store.
+            var request = createXmlHttp();
+            request.responseType = "json";
+            request.open("PUT", "/meme/save-meme", true)
+            request.onload = () => { 
+                if (request.status === 200) {
+                    var jsonResponse = request.response;
+					this.memeID = jsonResponse["meme_id"];
+                    this.document.getElementById("memeTitle").innerHTML = this.memeID;
+                    var signedUrl = jsonResponse["signedUrl"];
+                    uploadFileToCloudStorage(signedUrl, picture)
+                } else {
+                    alert("Error encountered when uploading to data store");
+                }
+            };
+            request.onerror = () => {
+                alert("Something went wrong");
+            };
+
+			request.setRequestHeader("Content-Type", "application/json");
+            console.log(jsonMemeInfo);
+            request.send(jsonMemeInfo);
 		}		
 	
 		
-		function saveInfo(memeCaption, memeTitle, username, url){
-		  var newmemeinfo = memeinfo.push();
-		  newmemeinfo.set({
-			memeCaption: memeCaption,
-			memeTitle:memeTitle,
-			url: url,
-			username:username
-		  });
-		  
-		  console.log(newmemeinfo);
-		}
-		
-		/*
-		function confirmUpload(){
-			//uploading file to firebase storage
-			var metadata = {
-				contentType:'image/jpeg',
-				customMetadata{
-					'uploadedBy': user.uid,
-					'memetitle': document.getElementById('memetitle'),
-					'caption': document.getElementById('memecaption')
-				},
-			};
-		}
-		*/
-		
-		function getFile(){
-			var username = document.getElementById('username');
-			
-			//file chosen through html
-			var uploadFile = document.getElementById('fileButton').files[0];
-			//uploadFile = document.getElementById('submit').setAttribute('disabled', 'true');
-			memeStorage(username, uploadFile);
-			
-			//confirmation on upload
-			document.getElementById('submit').innerHTML = "Upload Complete!";
-		}
-		
-			
-		function memeStorage(memeTitle){
-			//setting unique name for uploaded image
-			var name = 'meme/' + memeTitle + '.png';	
-			
-			//creating reference to storage, and storage reference
-			var storageRef = firebase.storage().ref();
-			
-			//getting file and setting metadata type
-			var file = document.querySelector("#meme").files[0];
-			var metadata = {
-			  contentType: 'image/jpeg'
-			};
+		function uploadFileToCloudStorage(signedUrl, picture) {
 
-			//uploading file to firebase storage
-			var task = storageRef.child(name).put(file, metadata);
-			task.on('state_changed', function(snapshot){
-			
-				//SETUP FOR A PROGRESS BAR y/n
-				//changing states: loading progress, pause, etc.
-				var progress = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
-				console.log("Upload is " + progress + "done");
-				
-			}, function(error){
-				//error in upload
-				alert("Error Uploading!");
-			}, function(){
-				//upload success
-				var postKey = firebase.database().ref().child('Posts/').push().key;
-				var memeurl = task.snapshot.downloadURL;
-				console.log("HERE IS WHAT URL RETURNS!!!");
-				console.log(memeurl);
-				return memeurl;
-			});
-			document.getElementById('submit').innerHTML = "Uploaded!";
+			var result = ""
+			const request = createXmlHttp();
+			request.open("PUT", signedUrl, true);
+			request.onload = () => {
+				if (request.status === 200) {
+					this.window.location.href = "/meme/" + this.memeID;
+				} else {
+					alert("Something went wrong!");
+				}
+			};
+			request.onerror = () => {
+				alert("Something went wrong");
+			};
+			request.setRequestHeader('Content-Type', picture.type);
+			request.send(picture);
 		}
+		function createXmlHttp() {
+				let xmlhttp;
+			
+				if (window.XMLHttpRequest)
+					xmlhttp = new XMLHttpRequest();
+				else
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+				if (!(xmlhttp)) 
+					alert("Your browser does not support AJAX!");
+
+				return xmlhttp;
+			}
+		
+		
 			
 	</script>	
 </html>	
+
