@@ -159,7 +159,7 @@ def navigate_meme_page(meme_id):
 
     user = get_identity()
 
-    if(meme.title != ''):
+    if(meme['title'] != ''):
         return render_template('meme.html', meme_to_display=meme, identity=user)
     else:
         return render_template('not_found.html', type_of_entity='Meme', identifier=meme_id)
