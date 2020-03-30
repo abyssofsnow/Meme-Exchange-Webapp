@@ -18,6 +18,7 @@
 	</head>
 
 	<body>
+
         {% include 'topNav.html' %}
 
         <div id="confirmation">
@@ -234,37 +235,11 @@
 			function addFriend() {
 				//Set up xmlhttprequest object.
 				var request = createXmlHttp();
+                var outerRef = this.document;
 
 				request.onreadystatechange = function() {
  					if (request.readyState == 4) {
-		                 switch(request.status) {
-
-		                    case 200: //Success
-		                        this.document.getElementById("confirmation-message").innerHTML = "Friend request sent!";
-		                        break;
-
-		                    case 500: //Server failed to send request.
-		                        this.document.getElementById("confirmation-message").innerHTML = "A server error occurred.";
-		                        break;
-
-		                    case 401: //These users are already friends
-		                        this.document.getElementById("confirmation-message").innerHTML = "You two are already friends!";
-		                        break;
-
-		                    case 400: //This user already sent a request.
-		                        this.document.getElementById("confirmation-message").innerHTML = "Be patient! You've already sent a request.";
-		                        break;
-
-		                    case 403: //This user already received a request.
-		                        this.document.getElementById("confirmation-message").innerHTML = "Check your notifications!"
-		                        break;
-		                 }
-
-						this.document.getElementById("confirmation").style.visibility = "visible";
-
-		                 setTimeout( function() {
-		                    this.document.getElementById("confirmation").style.visibility = "hidden";
-		                 }, 3000)
+                         display_confirmation(request.status)
  					}
 
  				}
@@ -278,6 +253,37 @@
 				request.setRequestHeader("Content-type", "application/json")
 				request.send(JSON.stringify(sentReceived));
 			}
+
+            function display_confirmation(code) {
+                console.log(code)
+                switch(code) {
+                    case 200: //Success
+                        this.document.getElementById("confirmation-message").innerHTML = "Friend request sent!";
+                        break;
+
+                    case 500: //Server failed to send request.
+                        this.document.getElementById("confirmation-message").innerHTML = "A server error occurred.";
+                        break;
+
+                    case 401: //These users are already friends
+                        this.document.getElementById("confirmation-message").innerHTML = "You two are already friends!";
+                        break;
+
+                    case 400: //This user already sent a request.
+                        this.document.getElementById("confirmation-message").innerHTML = "Be patient! You've already sent a request.";
+                        break;
+
+                    case 403: //This user already received a request.
+                        this.document.getElementById("confirmation-message").innerHTML = "Check your notifications!"
+                        break;
+                }
+
+                this.document.getElementById("confirmation").style.visibility = "visible";
+
+                setTimeout( function() {
+                    this.document.getElementById("confirmation").style.visibility = "hidden";
+                }, 3000)
+            }
 
 		</script>
 

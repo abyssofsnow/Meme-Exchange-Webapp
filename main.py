@@ -162,7 +162,7 @@ def send_friend_request():
     try:
         for friend_entry in sender_obj['friends']:
             if(friend_entry == receiver):
-                abort(401)
+                return json.dumps({'success': False}), 401, {'ContentType': 'application/json'}
     except:
         str = "Sender has no friends;proceed"
 
@@ -172,9 +172,10 @@ def send_friend_request():
 
         for friend_request in sender_friend_requests:
             if(friend_request == receiver):
-                abort(403)
+                return json.dumps({'success': False}), 403, {'ContentType': 'application/json'}
     except:
         str = "Sender has no friend requests; proceed"
+
 
     # Add a friend request between these two.
     try:
@@ -183,19 +184,20 @@ def send_friend_request():
         # Make sure the sender hasn't already sent a request.
         for friend_request in receiver_friend_requests:
             if(friend_request == sender):
-                abort(400)
+                return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
 
         receiver_friend_requests.append(sender)
     except:
-        receiver_friend_requests = [sender]
+        receiver_friend_requests = [sender] 
 
     # Add the sender to the receiver's pending invites
     try:
         receiver_obj['friend_request_in'] = receiver_friend_requests
         datastore_client.put(receiver_obj)
     except:
-        abort(500)
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
 
+    
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
 
