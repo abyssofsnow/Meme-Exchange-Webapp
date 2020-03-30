@@ -26,7 +26,7 @@
         <col width=25%>
 		<br/>
         <tr>
-			<th height="100%" bgcolor=black><img src='./static/profile.png' id='profile' style="width:180px;height:180px;"></th>
+			<th height="100%" bgcolor=black><img src='/static/profile.png' id='profile' style="width:180px;height:180px;"></th>
             <th height="15">
                 <font face="Papyrus" size="6">Profile Settings</font>
 				<h5><font face="Papyrus">NewAccount</font></h5>
@@ -199,10 +199,10 @@
 				document.getElementById('profile').src = url;
 			  
 				//updating user photoURL parameter in database
-				user.updataProfile({
+				name.updataProfile({
 					photoURL: url
 				}).then(function(){
-					firebase.database().ref('Users' + user.uid).set({
+					firebase.database().ref('Users' + name.uid).set({
 						"photoURL": url
 					});
 				});
