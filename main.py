@@ -53,6 +53,105 @@ def liveness_check():
 def navigate_login():
 	return render_template('login.html')
 
+@app.route('/trade', methods=['GET'])
+def trade():
+    identity = get_identity()
+    app.logger.error(identity)
+    queryout = datastore_client.query(kind='Trade_Request')
+    queryout.add_filter('sender', '=', identity)
+    outgoing_trades = list(queryout.fetch())
+    queryin = datastore_client.query(kind='Trade_Request')
+    queryin.add_filter('receiver', '=', identity)
+    incoming_trades = list(queryin.fetch())
+    ins = ""
+    for i in incoming_trades:
+        ins = ins + renderintrade(i)
+    outs = ""
+    for i in outgoing_trades:
+        outs = outs + renderouttrade(i)
+    return render_template("trades.html", intrades = ins, outtrades = outs)
+
+
+def renderintrade(intrade):
+    output = "<tr><td>" + str(intrade['meme_offered']) + "</td><td>" + str(intrade['meme_requested']) + "</td><td>" + str(intrade['sender']) + "</td><td><button type=\"button\" onclick=\"confirmTrade(\'" + str(intrade['trade_id']) + "\')\">Confirm Trade</button></td>"
+    return output
+
+
+def renderouttrade(outtrade):
+    output = "<tr><td>" + str(outtrade['meme_offered']) + "</td><td>" + str(outtrade['meme_requested']) + "</td><td>" + str(outtrade['receiver']) + "</td>"
+    return output
+
+
+@app.route('/trade/<memeid>', methods=['GET'])
+def requesttrade(memeid):
+    return navigate_memeselector(get_identity(),memeid)
+
+@app.route('/trade/<requested>/<offered>')
+def generateATrade(requested, offered):
+    
+    Moffered = datastore_client.query(kind='Meme')
+    Moffered.add_filter('id', '=', int(offered))
+    Mofferedmeme = list(Moffered.fetch())
+    Mrequested = datastore_client.query(kind='Meme')
+    Mrequested.add_filter('id', '=', int(requested))
+    Mrequestedmeme = list(Mrequested.fetch())
+    
+    newtrade = datastore.Entity(datastore_client.key('Trade_Request'))
+    
+    newtrade.update({
+        'meme_offered':offered,
+        'meme_requested':requested,
+        'receiver':Mrequestedmeme[0]['owner'],
+        'sender':Mofferedmeme[0]['owner'],
+        'trade_id':str(offered)+str(requested)
+    })
+    datastore_client.put(newtrade)
+    return redirect(url_for('trade'))
+
+
+
+def navigate_memeselector(username,memetotradefor):
+    identity = get_identity()
+
+    user_viewed = get_datastore_user_obj(username)
+
+    try:
+        username = user_viewed['username']
+
+        # Get the profile picture of the profile we're showing.
+        profile_picture_url = create_avatar_display_url(user_viewed['picture'])
+
+        # Load the memes associated with the user to be displayed.
+        query = datastore_client.query(kind='Meme')
+        query.add_filter('owner', '=', username)
+        memes = list(query.fetch())
+
+        return render_template('selector.html', profile_picture_url=profile_picture_url, user_to_display=user_viewed,
+                               safe_user_to_display=json.dumps(user_viewed), memes_owned=memes, identity=identity,request = memetotradefor)
+    except TypeError:
+        return render_template('not_found.html', type_of_entity='User', identifier=username)
+
+@app.route('/trade/confirm/<completeTradeID>', methods=['POST'])
+def completetrade(completeTradeID):
+    completeTradeQuery = datastore_client.query(kind='Trade_Request')
+    completeTradeQuery.add_filter('trade_id', '=', str(completeTradeID))
+    theTradeToComplete = list(completeTradeQuery.fetch())
+    offered = datastore_client.query(kind='Meme')
+    offered.add_filter('id', '=', int(theTradeToComplete[0]['meme_offered']))
+    offeredmeme = list(offered.fetch())
+    requested = datastore_client.query(kind='Meme')
+    requested.add_filter('id', '=', int(theTradeToComplete[0]['meme_requested']))
+    requestedmeme = list(offered.fetch())
+    requestedmeme[0]['owner'] = str(theTradeToComplete[0]['receiver'])
+    offeredmeme[0]['owner'] = str(theTradeToComplete[0]['sender'])
+    app.logger.error(str(theTradeToComplete[0]['sender']) + 'sender')
+    app.logger.error(str(requestedmeme[0]['owner'] + 'also sender'))
+    app.logger.error(str(theTradeToComplete[0]['receiver']) + 'receiver')
+    app.logger.error(str(offeredmeme[0]['owner'] + 'also receiver'))
+    datastore_client.delete(theTradeToComplete[0].key)
+    datastore_client.put(offeredmeme[0])
+    datastore_client.put(requestedmeme[0])
+    return redirect(url_for('trade'))
 # } Tim's section end. ===================================================
 
 
