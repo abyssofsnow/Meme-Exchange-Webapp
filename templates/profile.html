@@ -19,9 +19,13 @@
 
 	<body>
 
-        {%with tempId = user_to_display.username %}
-          {% include 'topNav.html' %}
-        {% endwith %}
+        {% if user_to_display is defined %}
+            {%with tempId = user_to_display.username %}
+            {% include 'topNav.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'topNav.html' %}
+        {% endif %}
 
         <div id="confirmation">
             <h3 style="margin-top:0;">Status</h3>
