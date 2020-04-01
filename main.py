@@ -1,18 +1,16 @@
 
-from flask import Flask, Response, abort, render_template, request, jsonify
+from flask import Flask, Response, abort, render_template, request
 from google.auth.transport import requests
-from google.cloud import datastore, storage
-
+from google.cloud import datastore
+#from google.cloud import storage
 
 import google.oauth2.id_token
 import json
 import logging
 import os
-import datetime
 
 app = Flask(__name__)
 datastore_client = datastore.Client('memes-marketplace')
-storage_client = storage.Client.from_service_account_json("credentials.json")
 
 firebase_request_adapter = requests.Request()
 
