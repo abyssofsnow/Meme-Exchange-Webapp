@@ -175,11 +175,16 @@ def go_notification():
 
 @app.route('/user/<username>/notification', methods=['GET'])
 def go_user_notification(username):
-	return render_template("notification.html")
+    identity = get_identity()
+    user_viewed = get_datastore_user_obj(username)
+    return render_template("notification.html", username = username, user_to_display = user_viewed)
 
 @app.route('/user/<username>/home', methods=['GET'])
 def go_user_home(username):
-	return render_template("home.html",username=username)
+    identity = get_identity()
+    user_viewed = get_datastore_user_obj(username)
+    return render_template("home.html", username = username, user_to_display = user_viewed)
+    
 
 # } End Kyle's section ==========================================
 
