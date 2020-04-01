@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<!--Daijue Dong, Meme Exchange Website, Date Created: 2/14/20, Last Modified: 3/28/20----->
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Meme Exchange</title>
+		<style media="screen">
+			body{
+				display: flex;
+				min-height: 100vh;
+				width: 100%;
+				padding: 0;
+				margin: 0;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;	
+				background-color: whitesmoke;
+			}
+		</style>	
+	</head>
+
+	<body>
+		
+		<!--ROW ONE OF TABLE， insert profile pic-->
+        <col width=25%>
+		<br/>
+        <tr>
+			<th height="100%" bgcolor=black><img src='/static/profile.png' id='profile' style="width:180px;height:180px;"></th>
+            <th height="15">
+                <font face="Papyrus" size="6">Profile Settings</font>
+				<h5><font face="Papyrus">NewAccount</font></h5>
+			</th>
+        </tr>
+		
+		<section>
+			<font face="Papyrus" size="3">username</font>
+			<input name="username" id="username" />
+		</section>
+		<br/>
+		
+		
+		<section>
+			<section align="left">
+				<input type="file" id="file" name="fileUpload" accept="image/*"/>
+				<button onclick="imgStorage()" id="upload">Submit</button>
+			</section>
+			<br/>
+		
+			<div id="profileEdit" class="collapse">
+				<form> <!--action = "/profileform" method="POST" autocomplete="off">-->
+					<section>
+						<label>
+							<font face="Papyrus" size="3">First Name</font>
+						</label> 
+						<input name="first-name" id="firstName" />
+					</section>
+					
+					<section>
+						<label>
+							<font face="Papyrus" size="3">Last Name</font>
+						</label> 
+						<input name="last-name" id="lastName" />
+					</section>
+					
+					
+					<p><label>
+							<font face="Papyrus" size="3">Please enter your bio: </font>
+						</label><br/>
+					</p>
+					<textarea cols="30" rows="8" name="bio" id="bio" style="margin: 0px; width: 615px; height 30px;">What type of memer are you?</textarea>
+					
+					<br/>
+				<button onclick="submitForm()" type="submit" id='submit'>Save</button>
+				</form>
+				
+				<br/><br/><br/>
+			</div>
+		</section>
+	</body>
+	
+	
+	<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-storage.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+	<!--<script src="js/firebase.js"></script>
+	Firebase App (the core Firebase SDK) is always required and must be listed first -->
+	 
+
+	
+	<script>
+		//Firebase configuration
+		var firebaseConfig = {
+		  apiKey: "AIzaSyAzaJ2JLSRSyjFkTcsQWE1mCBQ0ZqrUAKg",
+		  authDomain: "meme-marketplace-auth.firebaseapp.com",
+		  databaseURL: "https://meme-marketplace-auth.firebaseio.com",
+		  projectId: "meme-marketplace-auth",
+		  storageBucket: "meme-marketplace-auth.appspot.com",
+		  messagingSenderId: "800243971683",
+		  appId: "1:800243971683:web:d17e0dc768bc038ce6ea56",
+		  measurementId: "G-8JWEM1E8Q2"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+		console.log(firebase);
+		
+		
+		
+		
+		var user = firebase.auth().currentUser;
+		var name, uid, profile, username;
+		
+		//signed-in
+		if (user){
+			//name = user.displayName;
+			//uid = user.uid;
+			//profile = user.profileURL;
+		
+		//not signed in
+		}else{
+			alert('Permission not granted!');
+		}
+		
+		
+		// Reference messages collection
+		var userinfo = firebase.database().ref('Users');
+		
+
+		// Listen for form submit
+		//document.getElementById('profileEdit').addEventListener('click', submitForm);
+
+		// Submit form
+		function submitForm(){
+
+			// Get values
+			var firstname = document.getElementById('firstName').value;
+			var lastname = document.getElementById('lastName').value;
+			var bio = document.getElementById('bio').value;
+			var username = document.getElementById('username').value;
+
+			
+			
+			//call function saveinfo
+			saveInfo(firstname, lastname, bio, username);
+			
+			document.getElementById('submit').innerHTML = "Uploaded!";
+		}	
+		
+		function get(id){
+			return document.getElementById().value;  
+		}
+		
+		// Save info to firebase
+		function saveInfo(firstname, lastname, bio, username){
+		  var newuserinfo = userinfo.push();
+		  newuserinfo.set({
+			firstname: firstname,
+			lastname:lastname,
+			bio: bio,
+			username:username
+		  });
+		  
+		  console.log(newuserinfo);
+		}
+		
+		function getFile(){
+			var username = document.getElementById('username');
+			
+			//file chosen through html
+			var uploadFile = document.getElementById('fileButton').files[0];
+			//uploadFile = document.getElementById('submit').setAttribute('disabled', 'true');
+			imgStorage(username, uploadFile);
+			
+			//confirmation on upload
+			document.getElementById('upload').innerHTML = "Upload Complete!";
+		}
+		
+		
+		function imgStorage(){
+			//setting unique name for uploaded image: ex: abyssofsnow/profile.png
+			var name = document.getElementById('username').value + '/profile.png';	
+			
+			//creating reference to storage, and storage reference
+			var storageRef = firebase.storage().ref();
+			
+			//getting file and setting metadata type
+			var file = document.querySelector("#file").files[0];
+			var metadata = {
+			  contentType: 'image/jpeg'
+			};
+
+			//uploading file to firebase storage
+			var task = storageRef.child(name).put(file, metadata);
+			task
+			.then(snapshot => snapshot.ref.getDownloadURL())
+			.then(url => {
+				console.log(url);
+				document.getElementById('profile').src = url;
+			  
+				//updating user photoURL parameter in database
+				name.updataProfile({
+					photoURL: url
+				}).then(function(){
+					firebase.database().ref('Users' + name.uid).set({
+						"photoURL": url
+					});
+				});
+			})
+			.catch(console.error);
+			
+			document.getElementById('upload').innerHTML = "Uploaded!";
+		}
+		
+
+
+	</script>
+</html>

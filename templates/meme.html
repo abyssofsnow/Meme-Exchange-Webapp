@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-
+        <title>{{meme_to_display.title}}</title>
         <link rel="stylesheet" href="/static/profile_stylesheet.css">
 
 
@@ -9,41 +9,49 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-		<script src="https://apis.google.com/js/client.js">
 	</head>
 	<body>
 
 		{% include 'topNav.html' %}
 
-        <div class="container">    
-		    <div class="row">
-		        <div class="col-sm-12 well">
-		            <div class="well">
-                        <img src="" alt="Meme">
-                    </div>
-                </div>
-            </div>
+        <div class="container">
 
-            <div class="row">
-		        <div class="col-sm-8 well">
-		            <div class="well">
-                        <h4>
-                            Owner: <a href="/user/{{ meme_to_display.owner }}"> {{meme_to_display.owner}}</a>
-                        </h4>
-                    </div>
+            <div class="row well">
+                <div class="well" style="text-align:center">
+                <img src="{{ picture_url }}" alt="Meme">
                 </div>
-                <div class="col-sm-4 well">
-		            <div class="well">
+		        <div class="col-sm-8">
+
+                    <h3 style="margin-top:0;">
+                        {{meme_to_display.title}}
+                    </h3>
+                    <h4>
+                        Owner: <a href="/user/{{ meme_to_display.owner }}"> {{meme_to_display.owner}}</a>
+                    </h4>
+			<button><a href="memeUpload.html" id="memeupload">Upload a Meme</a></button>
+
+                </div>
+                <div class="col-sm-4">
+
+                    {% if meme_to_display.tags|length %}
+                        <p>
+                        {% for tag in meme_to_display.tags %}
+                            <span class="label label-primary">{{tag}}</span>
+                        {% endfor %}
+                        </p>
+                    {% else %}
+                        <p> This meme is untagged! </p>
+                    {% endif %}
+
+                    {% if identity != '' %}
                         <button onclick="window.location.href = '/trade/{{meme_to_display.id}}';">
                             Trade For This Meme
                         </button>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        
 
-	
 	</body>
 
 </html>
