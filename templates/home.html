@@ -9,23 +9,6 @@
 	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 	  <style> 
 	  
-		/*incorporating the parallax scrolling effect*/
-		.parallax {
-		  /* The image used 
-		  background-image: url("parallax.jpg");*/
-
-		  /* Set a specific height */
-		  min-height: 500px; 
-
-		  /* Create the parallax scrolling effect */
-		  background-attachment: fixed;
-		  background-position: center;
-		  background-repeat: no-repeat;
-		  background-size: cover;
-		}
-		body{
-		  /*background-color: #1F4080;*/
-		}
 		/* Set black background color, white text and some padding */
 		footer {
 		  background-color: #555;
@@ -43,113 +26,150 @@
         {% else %}
             {% include 'topNav.html' %}
         {% endif %}
-		<div class="container text-center">    
-		  <div class="row">
-			<div class="col-sm-3 well">
-			  <div class="well">
-				<p><a href="#">My Profile</a></p>
-				<img src="bird.jpg" class="img-circle" height="65" width="65" alt="Avatar">
-			  </div>
-			  <div class="well">
-				<p><a href="#">Type of Memer</a></p>
-				<p>
-				  <span class="label label-default">Dank</span>
-				  <span class="label label-primary">Reddit</span>
-				  <span class="label label-success">Normie</span>
-				  <span class="label label-info">Wholesome</span>
-				  <span class="label label-warning">Classic</span>
-				  <span class="label label-danger">Ghetto</span>
-				</p>
-			  </div>
-			  <p><a href="#">Check this out</a></p>
-			  <p><a href="#">Check this out</a></p>
-			  <p><a href="#">Check this out</a></p>
-			</div>
-			<div class="col-sm-7">
-			
-			  <div class="row">
-				<div class="col-sm-12">
-				  <div class="panel panel-default text-left">
-					<div class="panel-body">
-					  <p contenteditable="true">Status: Feeling Blue</p>
-					  <button type="button" class="btn btn-default btn-sm">
-						<span class="glyphicon glyphicon-thumbs-up"></span> Like
-					  </button>     
-					</div>
-				  </div>
-				</div>
-			  </div>
-			  
-			  <div class="parallax"></div>
-			  <div class="row">
-				<div class="col-sm-3">
-				  <div class="well">
-				   <p>Friend1</p>
-				   <img src="prof.jpg" alt="pic" class="img-circle" height="55" width="55" alt="Avatar">
-				  </div>
-				</div>
-				<div class="col-sm-9">
-				  <div class="well">
-				   <img src="meme.jpg" alt="meme">
-				  </div>
-				</div>
-			  </div>
-			  <div class="row">
-				<div class="col-sm-3">
-				  <div class="well">
-				   <p>Friend2</p>
-				   <img src="prof.jpg" alt="pic" class="img-circle" height="55" width="55" alt="Avatar">
-				  </div>
-				</div>
-				<div class="col-sm-9">
-				  <div class="well">
-				   <img src="meme.jpg" alt="meme">
-				  </div>
-				</div>
-			  </div>
-			  <div class="row">
-				<div class="col-sm-3">
-				  <div class="well">
-				   <p>Friend3</p>
-				   <img src="prof.jpg" alt="pic" class="img-circle" height="55" width="55" alt="Avatar">
-				  </div>
-				</div>
-				<div class="col-sm-9">
-				  <div class="well">
-				   <img src="meme.jpg" alt="meme">
-				  </div>
-				</div>
-			  </div>
-			  <div class="row">
-				<div class="col-sm-3">
-				  <div class="well">
-				   <p>Friend4</p>
-				   <img src="prof.jpg" alt="pic" class="img-circle" height="55" width="55" alt="Avatar">
-				  </div>
-				</div>
-				<div class="col-sm-9">
-				  <div class="well">
-				   <img src="meme.jpg" alt="meme">
-				  </div>
-				</div>
-			  </div>     
-			</div>
-			<div class="col-sm-2 well">
-			  <div class="thumbnail">
-				<p>Requested <br> Meme Swap:</p>
-				<img src="meme.jpg" alt="meme" width="400" height="300">
-				<button class="btn btn-primary">Info</button>
-			  </div>      
-			  <div class="well">
-				<p>Suggested <br>Memers</p>
-			  </div>
-			</div>
-		  </div>
-		</div>
+		
+        <div>
+            <div class=" px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                <h2 class="display-4">Welcome to Meme Exchange!</h2>
+                <p class="lead">Upload and trade memes with your friends. Just sign up to get started!</p>
+            </div>
+
+            <div class="container">
+                <h3> Need some inspiration?</h3>
+                <div id="memes" class=" mb-3 text-center">
+                    <!-- Memes from Reddit are inserted here! -->
+                </div>
+                <p class="text-right"> Memes courtesy of /r/memes</p>
+            </div>
+        </div>
 
 		<footer class="container-fluid text-center">
 		  <p>@2020 Meme Exchange</p>
 		</footer>
 
+        <script>
+            var redditEncodedAuth = '{{ auth_encoding }}';
+
+            var memesToDisplay = [];
+
+            class RedditMeme {
+                constructor(title, image, link) {
+                    this.title = title;
+                    this.image = image;
+                    this.link = link;
+                }
+            }
+
+            generate_oauth2_credentials();
+
+
+            //Convert the posts that Reddit gives into memes as we display them.
+            function display_memes(raw_post_array) {
+                var i;
+                
+                //Convert the memes that Reddit generated into RedditMeme objects
+                for(i = 0; i < raw_post_array.length; i++) {
+
+                    //Pare the meme down to its title, image, and link.
+                    let tempObj = new RedditMeme(raw_post_array[i].data.title, 
+                                                    raw_post_array[i].data.url,
+                                                    "https://reddit.com" + raw_post_array[i].data.permalink);
+
+                    this.memesToDisplay.push(tempObj);
+                }
+
+                var memesTemplate = "";
+
+                //For each of the memes, build an HTML template to display its data.
+                for(i = 0; i < memesToDisplay.length; i++) {
+
+                    memesTemplate += `<div class="mb-4 well">
+                        <div class="">
+                            <a href="`;
+                    memesTemplate += memesToDisplay[i].link;
+                    memesTemplate += `">
+                            <h4 class="my-0 font-weight-normal">`;
+                    memesTemplate += memesToDisplay[i].title;
+                    memesTemplate += `</h4></a></div>
+                        <div class="card-body">
+                            <img src="`;
+                     memesTemplate += memesToDisplay[i].image;
+                     memesTemplate += `" style="max-height:400px;max-width:400px">
+                        </div>
+                    </div>`;
+                }
+
+
+                //Update the DOM such that we can see these memes.
+                this.document.getElementById("memes").innerHTML = memesTemplate;
+            }
+
+            //Make a call to retrieve the top memes posts. 
+            function retrieve_reddit_memes(access_token) {
+                //Send POST request.
+                var request = createXmlHttp();
+                request.responseType = "json";
+                request.open("GET", "https://oauth.reddit.com/r/memes/new?limit=5", true)
+                request.onload = () => { 
+                    if (request.status === 200) {
+                        var response =  request.response;
+
+                        var posts = response["data"]["children"]
+
+                        display_memes(posts);
+                    } else {
+                        alert("Error encountered when getting memes from Reddit.");
+                    }
+                };
+                request.onerror = () => {
+                    alert("Something went wrong in retrieving Reddit posts.");
+                };
+
+                request.setRequestHeader("Authorization", "Bearer " + access_token); //Send the Base64 encoded string.
+                request.send();
+            }
+
+
+            //Generate the OAuth2 token to access the Reddit API.
+            function generate_oauth2_credentials() {
+                
+                //Send POST request to get oauth2 credentials from Reddit.
+                var request = createXmlHttp();
+                request.open("POST", "https://www.reddit.com/api/v1/access_token", true)
+                request.onload = () => { 
+                    if (request.status === 200) {
+                        var responseObj = JSON.parse(request.response);
+                        access_token = responseObj.access_token;
+
+                        //Load new r/meme posts.
+                        retrieve_reddit_memes(access_token);
+
+                    } else {
+                        alert("Error encountered when getting OAuth2 access token.");
+                    }
+                };
+                request.onerror = () => {
+                    alert("Error encountered when accessing reddit OAuth server");
+                };
+
+                request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                request.setRequestHeader("Authorization", "Basic " + this.redditEncodedAuth); //Send the Base64 encoded string.
+                request.send("grant_type=client_credentials");
+            }
+
+            function createXmlHttp() {
+				let xmlhttp;
+			
+				if (window.XMLHttpRequest)
+					xmlhttp = new XMLHttpRequest();
+				else
+					xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+				if (!(xmlhttp)) 
+					alert("Your browser does not support AJAX!");
+
+				return xmlhttp;
+			}
+
+        </script>
 	</body>
 </html>

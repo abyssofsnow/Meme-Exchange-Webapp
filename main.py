@@ -9,6 +9,9 @@ import json
 import logging
 import os
 import datetime
+import requests
+import requests.auth
+import base64
 
 app = Flask(__name__)
 datastore_client = datastore.Client('memes-marketplace')
@@ -16,8 +19,9 @@ storage_client = storage.Client.from_service_account_json("credentials.json")
 
 firebase_request_adapter = requests.Request()
 
-#configuring environment variable via app.yaml
-#CLOUD_STORAGE_BUCKET = os.environ['CLOUD-STORAGE-BUCKET']
+# The ID and secret values are needed to access the Reddit API.
+CLIENT_ID = "YqZTGYvBOog7WQ"
+CLIENT_SECRET = "iV23mtmIxsBssqW21IzZJryEiIs"
 
 # Tim's section {
 # new user creation from login page
@@ -158,13 +162,16 @@ def completetrade(completeTradeID):
 # Kyle's section here { ================================================
 # The home page handler
 @app.route('/')
-def navigate_home():
-	return render_template("home.html")
-
 @app.route('/home')
-def go_home():
-	return render_template("home.html")
-	
+def navigate_home():
+    identity = get_identity()
+
+    # Get the encoding for the reddit authorization.
+    auth_encoding = encode_reddit_auth() 
+
+    return render_template("home.html", username=identity, auth_encoding=auth_encoding)
+
+
 @app.route('/popularMeme')
 def go_popularMeme():
 	return render_template("popularMeme.html")
@@ -182,9 +189,13 @@ def go_user_notification(username):
 @app.route('/user/<username>/home', methods=['GET'])
 def go_user_home(username):
     identity = get_identity()
+
+    # Get the encoding for the reddit authorization.
+    auth_encoding = encode_reddit_auth()
+
     user_viewed = get_datastore_user_obj(username)
-    return render_template("home.html", username = username, user_to_display = user_viewed)
-    
+    return render_template("home.html", username = username, user_to_display = user_viewed, auth_encoding=auth_encoding)
+
 
 # } End Kyle's section ==========================================
 
@@ -192,6 +203,15 @@ def go_user_home(username):
 # Beginning Emily's section ===========================================
 class User:
     username = ''
+
+def encode_reddit_auth():
+    string = CLIENT_ID + ":" + CLIENT_SECRET
+
+    ascii_encoding = string.encode('ascii')
+    base64_bytes = base64.b64encode(ascii_encoding)
+    base64_string = base64_bytes.decode('ascii')
+
+    return base64_string
 
 # Save a new meme and return the URL where the client can store the picture.
 @app.route('/meme/save-meme', methods=['PUT'])
