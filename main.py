@@ -164,12 +164,11 @@ def completetrade(completeTradeID):
 @app.route('/')
 @app.route('/home')
 def navigate_home():
-    identity = get_identity()
 
     # Get the encoding for the reddit authorization.
     auth_encoding = encode_reddit_auth() 
 
-    return render_template("home.html", username=identity, auth_encoding=auth_encoding)
+    return render_template("home.html", auth_encoding=auth_encoding)
 
 
 @app.route('/popularMeme')
