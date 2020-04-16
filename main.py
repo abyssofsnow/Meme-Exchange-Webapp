@@ -9,8 +9,7 @@ import json
 import logging
 import os
 import datetime
-import requests
-import requests.auth
+
 import base64
 
 app = Flask(__name__)
@@ -280,7 +279,7 @@ def navigate_user_page(username):
         return render_template('profile.html', profile_picture_url=profile_picture_url, user_to_display=user_viewed,
                                safe_user_to_display=json.dumps(user_viewed), memes_owned=memes, identity=identity)
     except TypeError:
-        return render_template('not_found.html', type_of_entity='User', identifier=username)
+        return render_template('not_found.html', type_of_entity='User', identifier=username, identity=identity)
 
 
 @app.route('/sendFriendRequest', methods=['POST'])
@@ -348,7 +347,7 @@ def navigate_meme_page(meme_id):
     if(meme['title'] != ''):
         return render_template('meme.html', meme_to_display=meme, identity=user, picture_url=picture_url)
     else:
-        return render_template('not_found.html', type_of_entity='Meme', identifier=meme_id)
+        return render_template('not_found.html', type_of_entity='Meme', identifier=meme_id, identity=user)
 
 # Update the user's profile and return the URL where the client can store the picture.
 @app.route('/profile-edit/edit-with-picture', methods=['PUT'])
