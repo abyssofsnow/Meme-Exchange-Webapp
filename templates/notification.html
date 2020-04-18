@@ -13,24 +13,26 @@
     {% endwith %}
     <div class="row">
         <div class="col-sm-6">
-        <div class="well well-lg">
-            <h3><span class="label label-info">FRIEND REQUEST</span> <span class="badge">1</span></h3>
-            <div class="panel panel-info">
-            <div class="panel-heading">
-                <h4 class="panel-title">Request From Rick</h4>
-            </div>
-            <div class="panel-body">
-                Rick wants to be your friend
-            </div>
-            <div class="panel-footer">
-                <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-info">view profile</button>
-                    <button type="button" class="btn btn-info">accept</button>
-                    <button type="button" class="btn btn-info">denied</button>
+            {% for friendRequest in user_to_display.friend_request_in %}
+                <div class="well well-lg">
+                    <h3><span class="label label-info">FRIEND REQUEST</span> <span class="badge">1</span></h3>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">Request From {{friendRequest}}</h4>
+                        </div>
+                        <div class="panel-body">
+                            {{friendRequest}} wants to be your friend
+                        </div>
+                        <div class="panel-footer">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btn-info">view profile</button>
+                                <button type="button" class="btn btn-info" onclick = "acceptFriend('{{friendRequest}}')">accept</button>
+                                <button type="button" class="btn btn-info">denied</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </div>
-        </div>
+            {% endfor %}
         </div>
         <div class="col-sm-6">
         <div class="well well-lg">
@@ -39,3 +41,45 @@
         </div>
     </div>
 </body>
+
+<script>
+    var username = '{{username}}'
+    
+    //Emily's createXMLHttp
+    function createXmlHttp() {
+        let xmlhttp;
+    
+        if (window.XMLHttpRequest)
+            xmlhttp = new XMLHttpRequest();
+        else
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+        if (!(xmlhttp)) 
+            alert("Your browser does not support AJAX!");
+
+        return xmlhttp;
+    }
+
+    //Edit based on Emily's addFriend function in profile.html
+    function acceptFriend(senderName) {
+        //Set up xmlhttprequest object.
+        var request = createXmlHttp();
+        var outerRef = this.document;
+        userIdentity = username;
+        otherUserIdentity = senderName;
+
+        var acceptMsg = {
+            myIdentity: userIdentity,
+            friendIdentity: otherUserIdentity
+        };
+        request.open("POST", "/acceptAsFriend", true);
+        request.setRequestHeader("Content-type", "application/json")
+        request.send(JSON.stringify(acceptMsg));
+        setInterval(reloadThispage,1000);
+    }
+    
+    function reloadThispage() {
+        location.reload();
+    }
+
+</script>

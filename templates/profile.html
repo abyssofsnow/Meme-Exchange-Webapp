@@ -98,7 +98,8 @@
                         <div id="friends_list" class="scrollable_list">
                             {% for friend in user_to_display.friends %}
                                 <div id="friend">
-                                    <a href="/user/{{friend.username}}">{{ friend.username }}</a> 
+                                    <a href="/user/{{friend.username}}">{{ friend }}</a>
+                                    <button type="button" id="unfriendSomeone" onclick="unfriend('{{friend}}')" class="btn btn-primary">Unfriend</button>
                                     <img src="prof.jpg" alt="pic" class="img-circle" height="55" width="55" alt="Avatar">
                                 </div>
                             {% endfor %}
@@ -289,6 +290,28 @@
                 setTimeout( function() {
                     this.document.getElementById("confirmation").style.visibility = "hidden";
                 }, 3000)
+            }
+
+            function unfriend(friendUsername) {
+                var request = createXmlHttp();
+                var outerRef = this.document;
+                userIdentity = user.username;
+                otherUserIdentity = friendUsername;
+                console.log(userIdentity);
+                console.log(otherUserIdentity);
+
+                var unfriendMsg = {
+                    myIdentity: userIdentity,
+                    friendIdentity: otherUserIdentity
+                };
+                request.open("POST", "/unfriend", true);
+                request.setRequestHeader("Content-type", "application/json")
+                request.send(JSON.stringify(unfriendMsg));
+                setInterval(reloadThispage,1000);
+            }
+
+            function reloadThispage() {
+                location.reload();
             }
 
 		</script>

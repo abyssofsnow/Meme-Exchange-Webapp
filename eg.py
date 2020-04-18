@@ -194,69 +194,7 @@ def go_user_home(username):
     user_viewed = get_datastore_user_obj(username)
     return render_template("home.html", username = username, user_to_display = user_viewed, auth_encoding=auth_encoding)
 
-#modified based on Emily's send_friend_request()
-@app.route('/acceptAsFriend', methods=['POST'])
-def accept_friend_request():
-    myIdentity = request.json['myIdentity']
-    friendIdentity = request.json['friendIdentity']
-
-    my_obj = get_datastore_user_obj(myIdentity)
-    friend_obj = get_datastore_user_obj(friendIdentity)
-    
-    #remove friend_request
-    new_friend_request_in = my_obj['friend_request_in']
-    try:
-        new_friend_request_in.remove(friendIdentity)
-    except:
-        print("no such person in friend request")
-    try:
-        new_friends = my_obj['friends']
-    except:
-        new_friends = []
-
-    if friendIdentity in new_friends:
-        new_friends.remove(friendIdentity)
-
-    new_friends.append(friendIdentity)
-
-    try:
-        my_obj['friend_request_in'] = new_friend_request_in
-        my_obj['friends'] = new_friends
-        datastore_client.put(my_obj)
-    except:
-        print(new_friends)
-        print(new_friend_request_in)
-    
-
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
-
-
-@app.route('/unfriend', methods=['POST'])
-def unfriend_a_friend():
-    myIdentity = request.json['myIdentity']
-    friendIdentity = request.json['friendIdentity']
-
-    my_obj = get_datastore_user_obj(myIdentity)
-    print('myIdentity is')
-    print(myIdentity)
-    friend_obj = get_datastore_user_obj(friendIdentity)
-
-    try:
-        new_friends = my_obj['friends']
-    except:
-        new_friends = []
-        print('friend list is empty')
-    
-    try:
-        new_friends.remove(friendIdentity)
-        my_obj['friends'] = new_friends
-        datastore_client.put(my_obj)
-    except:
-        print('no such person in your friend list')
-    
-
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
+@app.route('')
 # } End Kyle's section ==========================================
 
 
