@@ -5,7 +5,13 @@
 	</head>
 
 	<body>
-		{% include 'topNav.html' %}
+		{% if user_to_display is defined %}
+            {%with tempId = user_to_display.username, identity = identity, user_to_display = user_to_display %}
+            {% include 'topNav.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'topNav.html' %}
+        {% endif %}
 		
 		<h1><font face="Papyrus">Lets Begin Memeing</font></h1>
 		<br/>

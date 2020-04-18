@@ -14,12 +14,15 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-        {% if tempId is defined %}
-            <li class="active"><a href="/user/{{tempId}}/home">Home</a></li>
-            <li><a href="/user/{{tempId}}/notification">Notifications</a></li>
+        {% if identity is defined and identity!= ''%}
+            <li class="active"><a href="/user/{{identity}}/home">Home</a></li>
+            {%if identity == user_to_display.username%}
+                <li><a href="/user/{{identity}}/notification">Notifications</a></li>
+            {% endif %}
+            <li><a href="/meme/upload-new">uploadMemes</a><li>
         {% else %}
             <li class="active"><a href="home">Home</a></li>
-            <li><a href="notification">Notifications</a></li>
+            <li><a href="/notification">Notifications</a></li>
         {% endif %}
         </ul>
         <form class="navbar-form navbar-right" role="search">
@@ -34,8 +37,8 @@
         </form>
         <ul class="nav navbar-nav navbar-right">
         {% if tempId is defined %}
-            <li><a href="/user/{{tempId}}">{{tempId}}<span class="glyphicon glyphicon-user"></span></a><li>
-            <li><a href="login">Log Out</a></li>
+            <li><a href="/user/{{identity}}">{{identity}}<span class="glyphicon glyphicon-user"></span></a><li>
+            <li><a href="/login">Log Out</a></li>
         {% else %}
             <li><a href="login"><span class="glyphicon glyphicon-user"></span>Log in</a></li>
         {% endif %}

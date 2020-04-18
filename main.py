@@ -163,11 +163,12 @@ def completetrade(completeTradeID):
 @app.route('/')
 @app.route('/home')
 def navigate_home():
-
+    identity = get_identity()
+    user_to_display = get_datastore_user_obj(identity)
     # Get the encoding for the reddit authorization.
     auth_encoding = encode_reddit_auth() 
 
-    return render_template("home.html", auth_encoding=auth_encoding)
+    return render_template("home.html", auth_encoding=auth_encoding, identity = identity, user_to_display = user_to_display )
 
 
 @app.route('/popularMeme')
@@ -182,7 +183,8 @@ def go_notification():
 def go_user_notification(username):
     identity = get_identity()
     user_viewed = get_datastore_user_obj(username)
-    return render_template("notification.html", username = username, user_to_display = user_viewed, json_user_to_display = json.dumps(user_viewed))
+
+    return render_template("notification.html", username = username, user_to_display = user_viewed, identity = identity)
 
 @app.route('/user/<username>/home', methods=['GET'])
 def go_user_home(username):
@@ -192,7 +194,7 @@ def go_user_home(username):
     auth_encoding = encode_reddit_auth()
 
     user_viewed = get_datastore_user_obj(username)
-    return render_template("home.html", username = username, user_to_display = user_viewed, auth_encoding=auth_encoding)
+    return render_template("home.html", username = username, user_to_display = user_viewed, auth_encoding=auth_encoding, identity = identity)
 
 #modified based on Emily's send_friend_request()
 @app.route('/acceptAsFriend', methods=['POST'])
@@ -314,11 +316,12 @@ def save_meme():
 @app.route('/meme/upload-new', methods=['GET'])
 def navigate_upload_meme():
     identity = get_identity()
+    user_to_display = get_datastore_user_obj(identity)
 
     if(identity == ''):
         abort(404)
 
-    return render_template('memeUpload.html', identity=identity)
+    return render_template('memeUpload.html', identity=identity, user_to_display = user_to_display)
 
 
 @app.route('/user/<username>', methods=['GET'])
