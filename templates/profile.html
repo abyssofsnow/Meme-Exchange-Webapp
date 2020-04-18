@@ -99,7 +99,9 @@
                             {% for friend in user_to_display.friends %}
                                 <div id="friend">
                                     <a href="/user/{{friend.username}}">{{ friend }}</a>
+                                    {% if identity == user_to_display.username %}
                                     <button type="button" id="unfriendSomeone" onclick="unfriend('{{friend}}')" class="btn btn-primary">Unfriend</button>
+                                    {% endif %}
                                     <img src="prof.jpg" alt="pic" class="img-circle" height="55" width="55" alt="Avatar">
                                 </div>
                             {% endfor %}

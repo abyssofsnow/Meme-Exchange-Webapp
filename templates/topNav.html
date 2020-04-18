@@ -14,7 +14,7 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-        {% if identity is defined and identity!= ''%}
+        {% if identity is defined and identity!= '' and user_to_display is defined %}
             <li class="active"><a href="/user/{{identity}}/home">Home</a></li>
             {%if identity == user_to_display.username%}
                 <li><a href="/user/{{identity}}/notification">Notifications</a></li>
