@@ -218,16 +218,37 @@ def accept_friend_request():
         new_friends = my_obj['friends']
     except:
         new_friends = []
+    
+    try:
+        new_friends_friend = friend_obj['friends']
+    except:
+        new_friends_friend = []
+
+    try:
+        new_friend_request_friend = friend_obj['friend_request_in']
+    except:
+        new_friend_request_friend = []
+    
+    if myIdentity in new_friend_request_friend:
+        new_friend_request_friend.remove(myIdentity)
 
     if friendIdentity in new_friends:
         new_friends.remove(friendIdentity)
 
     new_friends.append(friendIdentity)
 
+    if myIdentity in new_friends_friend:
+        new_friends_friend.remove(myIdentity)
+
+    new_friends_friend.append(myIdentity)
+
     try:
         my_obj['friend_request_in'] = new_friend_request_in
         my_obj['friends'] = new_friends
+        friend_obj['friend_request_in'] = new_friend_request_friend
+        friend_obj['friends'] = new_friends_friend
         datastore_client.put(my_obj)
+        datastore_client.put(friend_obj)
     except:
         print(new_friends)
         print(new_friend_request_in)
@@ -236,14 +257,39 @@ def accept_friend_request():
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
 
+@app.route('/denieAFriend' , methods = ['POST'])
+def denie_a_friendRequest():
+    myIdentity = request.json['myIdentity']
+    friendIdentity = request.json['friendIdentity']
+
+    my_obj = get_datastore_user_obj(myIdentity)
+    friend_obj = get_datastore_user_obj(friendIdentity)
+    
+    #remove friend_request
+    new_friend_request_in = my_obj['friend_request_in']
+    try:
+        new_friend_request_in.remove(friendIdentity)
+    except:
+        print("no such person in friend request")
+
+    try:
+        my_obj['friend_request_in'] = new_friend_request_in
+        datastore_client.put(my_obj)
+    except:
+        print("failed")
+    
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
+
+    
+
+    
+
 @app.route('/unfriend', methods=['POST'])
 def unfriend_a_friend():
     myIdentity = request.json['myIdentity']
     friendIdentity = request.json['friendIdentity']
 
     my_obj = get_datastore_user_obj(myIdentity)
-    print('myIdentity is')
-    print(myIdentity)
     friend_obj = get_datastore_user_obj(friendIdentity)
 
     try:
