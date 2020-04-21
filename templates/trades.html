@@ -36,7 +36,13 @@
 	  </style>
 	</head>
 	<body>
-	{% include 'topNav.html' %}
+	{% if user_to_display is defined and identity !='' %}
+            {%with tempId = user_to_display.username %}
+            {% include 'topNav.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'topNav.html' %}
+        {% endif %}
     <p id="test"></p>
     <div style="width: 100%; display: table;">
     <div style="display: table-row">

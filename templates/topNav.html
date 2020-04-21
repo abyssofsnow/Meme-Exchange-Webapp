@@ -19,7 +19,9 @@
             {%if identity == user_to_display.username%}
                 <li><a href="/user/{{identity}}/notification">Notifications</a></li>
             {% endif %}
-            <li><a href="/meme/upload-new">uploadMemes</a><li>
+            <li><a href="/meme/upload-new">Upload a Meme</a><li>
+            <li><a href="/trade">Trade Memes</a><li>
+            
         {% else %}
             <li class="active"><a href="home">Home</a></li>
             <li><a href="/notification">Notifications</a></li>
@@ -27,9 +29,9 @@
         </ul>
         <form class="navbar-form navbar-right" role="search">
         <div class="form-group input-group">
-            <input type="text" class="form-control" placeholder="Search..">
+            <input type="text" class="form-control" placeholder="Search.." id="usersearch">
             <span class="input-group-btn">
-            <button class="btn btn-default" type="button">
+            <button class="btn btn-default" type="button" onclick="window.location.replace('/user/'+document.getElementById('usersearch').value)">
                 <span class="glyphicon glyphicon-search"></span>
             </button>
             </span>        

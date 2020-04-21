@@ -1,5 +1,5 @@
 
-from flask import Flask, Response, abort, render_template, request, jsonify
+from flask import Flask, Response, abort, render_template, request, jsonify, redirect, url_for
 from google.auth.transport import requests
 from google.cloud import datastore, storage
 
@@ -54,11 +54,14 @@ def liveness_check():
 # The login/registration page handler
 @app.route('/login')
 def navigate_login():
-	return render_template('login.html')
+    identity = get_identity()
+    user_to_display = get_datastore_user_obj(identity)
+    return render_template('login.html')
 
 @app.route('/trade', methods=['GET'])
 def trade():
     identity = get_identity()
+    user_to_display = get_datastore_user_obj(identity)
     app.logger.error(identity)
     queryout = datastore_client.query(kind='Trade_Request')
     queryout.add_filter('sender', '=', identity)
@@ -72,7 +75,7 @@ def trade():
     outs = ""
     for i in outgoing_trades:
         outs = outs + renderouttrade(i)
-    return render_template("trades.html", intrades = ins, outtrades = outs)
+    return render_template("trades.html", intrades = ins, outtrades = outs, identity = identity, user_to_display = user_to_display )
 
 
 def renderintrade(intrade):
