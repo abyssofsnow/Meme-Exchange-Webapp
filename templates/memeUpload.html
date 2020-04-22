@@ -1,7 +1,27 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>Meme Upload</title>	
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link href="test.css" rel="stylesheet" type="text/css">
+
+	  <base href="https://www.jqueryscript.net/demo/Tiny-Text-Field-Based-Tags-Input-Plugin-For-jQuery-Tagify/">
+
+		<title>Meme Upload</title>
+		<style media="screen">
+			body{
+				display: flex;
+				min-height: 100vh;
+				width: 100%;
+				padding: 0;
+				margin: 0;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;
+				background-color: whitesmoke;
+			}
+		</style>
+
 	</head>
 
 	<body>
@@ -12,31 +32,44 @@
         {% else %}
             {% include 'topNav.html' %}
         {% endif %}
-		
+
 		<h1><font face="Papyrus">Lets Begin Memeing</font></h1>
 		<br/>
 		<section align="left">
 			<input type="file" id="meme" name="fileUpload" accept="image/*"/>
 			<input type="text" id="memeTitle" placeholder="Title Your Meme">
+			<br/><br/>
+
+			<div class="container">
+		    <input name='tags' id="memeTags" placeholder='Add some tags'>
+		  </div>
+
+			<br/><br/>
 			<button onclick="saveMeme()" id="submit">Submit</button>
 		</section>
 	</body>
-	
-	
+
+	<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="jQuery.tagify.js"></script>
+  <script>
+    $('[name=tags]').tagify();
+  </script>
+
 	<script>
-			
+
 
 		var memeID; //This will be the id that datastore gives to the meme, so we can navigate to it when it's uploaded.
-		
+
 		function saveMeme(){
 			// Get title and picture of meme.
 			var memeTitle = document.getElementById('memeTitle').value;
+			var memeTags = document.getElementsByName('tags').value;
 			var picture = document.getElementById('meme').files[0];
 
-			//Create the JSON version.
-            var jsonMemeInfo = JSON.stringify({"title": memeTitle, "filename": picture.name, "contentType": picture.type});
-			
-			//Send POST request to save the meme in data store.
+	//Create the JSON version (requested with memetags)
+      	var jsonMemeInfo = JSON.stringify({"title": memeTitle, "filename": picture.name, "tags": memeTags, "contentType": picture.type});
+
+	//Send POST request to save the meme in data store.
             var request = createXmlHttp();
             request.responseType = "json";
             request.open("PUT", "/meme/save-meme", true)
