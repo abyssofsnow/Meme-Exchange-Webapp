@@ -337,6 +337,7 @@ def save_meme():
     filename = request.json["filename"]
     content_type = request.json["contentType"]
     title = request.json["title"]
+    tags = request.json["tags"]
 
     if not (filename and content_type):
         # One of the fields was missing in the JSON request
@@ -353,12 +354,12 @@ def save_meme():
     entity = datastore.Entity(key[0])
     entity.update({
         'title': title,
+	'tags': tags,
         'owner': identity,
         'picture_id': filename,
         'id': key[0].id
     })
     datastore_client.put(entity)
-
 
     return jsonify({"signedUrl": picture_url, "meme_id": key[0].id})
 
