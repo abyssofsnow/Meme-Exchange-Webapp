@@ -8,7 +8,6 @@
 		<title>Meme Upload</title>
 		<style media="screen">
 			body{
-				display: flex;
 				min-height: 100vh;
 				width: 100%;
 				padding: 0;
@@ -18,6 +17,12 @@
 				flex-direction: column;
 				background-color: whitesmoke;
 			}
+		        .memebox{
+			    	padding-left: 35%;
+		    	}
+		    	.memeup input{
+				float:left;
+		    	}
 		</style>
 
 	</head>
@@ -31,20 +36,22 @@
             {% include 'topNav.html' %}
         {% endif %}
 
+        <div align="center">
 		<h1><font face="Papyrus">Lets Begin Memeing</font></h1>
 		<br/>
-		<section align="left">
-			<input type="file" id="meme" name="fileUpload" accept="image/*"/>
-			<input type="text" id="memeTitle" placeholder="Title Your Meme">
+		<section class="memebox" align="left">
+            <div class="memeup">
+                <input type="file" id="meme" name="fileUpload" accept="image/*"/>
+                <input type="text" id="memeTitle" placeholder="Title Your Meme"/>
+            </div>
 			<br/><br/>
-
-			<div class="container">
-				<input name='tags' id="memeTags" placeholder='Add some tags'>
-			</div>
+			
+			<input name='tags' id="memeTags" placeholder='Add some tags'/>
 
 			<br/><br/>
 			<button onclick="saveMeme()" id="submit">Submit</button>
 		</section>
+        </div>
 	</body>
 
 	<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
