@@ -12,7 +12,13 @@
 	</head>
 	<body>
 
-		{% include 'topNav.html' %}
+		{% if identity is defined and identity !='' %}
+            {%with identity = identity %}
+            {% include 'topNav.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'topNav.html' %}
+        {% endif %}
 
         <div class="container">    
 

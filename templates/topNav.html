@@ -14,9 +14,9 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-        {% if identity is defined and identity!= '' and user_to_display is defined %}
+        {% if identity is defined and identity!= ''  %}
             <li class="active"><a href="/user/{{identity}}/home">Home</a></li>
-            {%if identity == user_to_display.username%}
+            {%if identity != '' %}
                 <li><a href="/user/{{identity}}/notification">Notifications</a></li>
             {% endif %}
             <li><a href="/meme/upload-new">Upload a Meme</a><li>
@@ -38,7 +38,7 @@
         </div>
         </form>
         <ul class="nav navbar-nav navbar-right">
-        {% if tempId is defined %}
+        {% if identity is defined and identity !='' %}
             <li><a href="/user/{{identity}}">{{identity}}<span class="glyphicon glyphicon-user"></span></a><li>
             <li><a href="/login">Log Out</a></li>
         {% else %}

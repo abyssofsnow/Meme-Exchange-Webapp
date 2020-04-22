@@ -69,13 +69,8 @@ def trade():
     queryin = datastore_client.query(kind='Trade_Request')
     queryin.add_filter('receiver', '=', identity)
     incoming_trades = list(queryin.fetch())
-    ins = ""
-    for i in incoming_trades:
-        ins = ins + renderintrade(i)
-    outs = ""
-    for i in outgoing_trades:
-        outs = outs + renderouttrade(i)
-    return render_template("trades.html", intrades = ins, outtrades = outs, identity = identity, user_to_display = user_to_display )
+
+    return render_template("trades.html", intrades = incoming_trades, outtrades = outgoing_trades, identity = identity, user_to_display = user_to_display )
 
 
 def renderintrade(intrade):
@@ -218,37 +213,16 @@ def accept_friend_request():
         new_friends = my_obj['friends']
     except:
         new_friends = []
-    
-    try:
-        new_friends_friend = friend_obj['friends']
-    except:
-        new_friends_friend = []
-
-    try:
-        new_friend_request_friend = friend_obj['friend_request_in']
-    except:
-        new_friend_request_friend = []
-    
-    if myIdentity in new_friend_request_friend:
-        new_friend_request_friend.remove(myIdentity)
 
     if friendIdentity in new_friends:
         new_friends.remove(friendIdentity)
 
     new_friends.append(friendIdentity)
 
-    if myIdentity in new_friends_friend:
-        new_friends_friend.remove(myIdentity)
-
-    new_friends_friend.append(myIdentity)
-
     try:
         my_obj['friend_request_in'] = new_friend_request_in
         my_obj['friends'] = new_friends
-        friend_obj['friend_request_in'] = new_friend_request_friend
-        friend_obj['friends'] = new_friends_friend
         datastore_client.put(my_obj)
-        datastore_client.put(friend_obj)
     except:
         print(new_friends)
         print(new_friend_request_in)
@@ -257,39 +231,14 @@ def accept_friend_request():
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
 
 
-@app.route('/denieAFriend' , methods = ['POST'])
-def denie_a_friendRequest():
-    myIdentity = request.json['myIdentity']
-    friendIdentity = request.json['friendIdentity']
-
-    my_obj = get_datastore_user_obj(myIdentity)
-    friend_obj = get_datastore_user_obj(friendIdentity)
-    
-    #remove friend_request
-    new_friend_request_in = my_obj['friend_request_in']
-    try:
-        new_friend_request_in.remove(friendIdentity)
-    except:
-        print("no such person in friend request")
-
-    try:
-        my_obj['friend_request_in'] = new_friend_request_in
-        datastore_client.put(my_obj)
-    except:
-        print("failed")
-    
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'} 
-
-    
-
-    
-
 @app.route('/unfriend', methods=['POST'])
 def unfriend_a_friend():
     myIdentity = request.json['myIdentity']
     friendIdentity = request.json['friendIdentity']
 
     my_obj = get_datastore_user_obj(myIdentity)
+    print('myIdentity is')
+    print(myIdentity)
     friend_obj = get_datastore_user_obj(friendIdentity)
 
     try:
@@ -455,10 +404,10 @@ def navigate_meme_page(meme_id):
 
     user = get_identity()
 
-    # Get meme picture from cloud store.
-    picture_url = create_avatar_display_url(meme['picture_id'])
+    if(meme is not None and meme['title'] != ''):
+        # Get meme picture from cloud store.
+        picture_url = create_avatar_display_url(meme['picture_id'])
 
-    if(meme['title'] != ''):
         return render_template('meme.html', meme_to_display=meme, identity=user, picture_url=picture_url)
     else:
         return render_template('not_found.html', type_of_entity='Meme', identifier=meme_id, identity=user)
