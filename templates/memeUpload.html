@@ -62,23 +62,25 @@
 		var memeID; //This will be the id that datastore gives to the meme, so we can navigate to it when it's uploaded.
 
 		function saveMeme(){
-			// Get title and picture of meme.
-			var memeTitle = document.getElementById('memeTitle').value;
-		
-		var memeTags = document.getElementsByName('tags');
-            	var length = memeTags.length;
-            	var tags = '';
-            	for(i=0; i<length; i++){
-                	tags = tags + ' ' + memeTags[i].value; 
-                	console.log("values of meme: " + memeTags[i].value);
-           	 }
-		var picture = document.getElementById('meme').files[0];
+		    // Get title and picture of meme.
+		    var memeTitle = document.getElementById('memeTitle').value;
 
-        console.log('here is memeTags: ' + tags);
+		    var memeTags = document.getElementsByName('tags');
+		    var length = memeTags.length;
+
+		    //tags array
+		    var tags = [];
+
+		    for(i=0; i<length; i++){
+			tags.push(memeTags[i].value); 
+			console.log("here is values of meme " + memeTags[i].value);
+		    }
+		    var picture = document.getElementById('meme').files[0];
 			
+        console.log('here is memeTags: ' + tags);
 	//Create the JSON version (requested with memetags)
       	var jsonMemeInfo = JSON.stringify({"title": memeTitle, "filename": picture.name, "tags": tags, "contentType": picture.type});
-        console.log('jsonMemeInfo: ' + jsonMemeInfo);
+        console.log('jsonMemeInfo: ' + jsonMemeInfo);  
 			
 	//Send POST request to save the meme in data store.
             var request = createXmlHttp();
