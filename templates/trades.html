@@ -8,9 +8,9 @@
 	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
       <script type="text/javascript">
-      function confirmTrade(tradeID){
+      function confirmTrade(reqe, offe){
         const XHR = new XMLHttpRequest();
-        XHR.open("POST", '/trade/confirm/'+tradeID, false);
+        XHR.open("POST", '/trade/confirm/'+reqe+'/'+offe, false);
         XHR.send();
         window.location.replace('/trade');
       }
@@ -76,7 +76,7 @@
                             <td>{{intrade.sender}}
                             </td>
                             <td>
-                                <button type="button" onclick="confirmTrade('{{intrade.sender}}')">Confirm Trade</button>
+                                <button type="button" onclick="confirmTrade({{intrade.meme_requested}},{{intrade.meme_offered}})">Confirm Trade</button>
                             </td>
                         </tr> 
                     {% endfor %}

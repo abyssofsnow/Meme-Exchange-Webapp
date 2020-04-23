@@ -70,6 +70,8 @@ def trade():
     queryin.add_filter('receiver', '=', identity)
     incoming_trades = list(queryin.fetch())
 
+    for i in range(len(incoming_trades)):
+        incoming_trades[i]['trade_id'] = incoming_trades[i]['trade_id'][2:-2]
     return render_template("trades.html", intrades = incoming_trades, outtrades = outgoing_trades, identity = identity, user_to_display = user_to_display )
 
 
@@ -98,13 +100,15 @@ def generateATrade(requested, offered):
     Mrequestedmeme = list(Mrequested.fetch())
     
     newtrade = datastore.Entity(datastore_client.key('Trade_Request'))
-    
+    app.logger.error(str(offered))
+    app.logger.error(str(requested))
+    app.logger.error(str(offered)+str(requested))
     newtrade.update({
-        'meme_offered':offered,
-        'meme_requested':requested,
-        'receiver':Mrequestedmeme[0]['owner'],
-        'sender':Mofferedmeme[0]['owner'],
-        'trade_id':str(offered)+str(requested)
+        'meme_offered':int(offered),
+        'meme_requested':int(requested),
+        'receiver':str(Mrequestedmeme[0]['owner']),
+        'sender':str(Mofferedmeme[0]['owner']),
+        'trade_id':str(str(offered)+str(requested))
     })
     datastore_client.put(newtrade)
     return redirect(url_for('trade'))
@@ -132,26 +136,36 @@ def navigate_memeselector(username,memetotradefor):
     except TypeError:
         return render_template('not_found.html', type_of_entity='User', identifier=username)
 
-@app.route('/trade/confirm/<completeTradeID>', methods=['POST'])
-def completetrade(completeTradeID):
+@app.route('/trade/confirm/<requested>/<offered>', methods=['POST'])
+def completetrade(requested, offered):
     completeTradeQuery = datastore_client.query(kind='Trade_Request')
-    completeTradeQuery.add_filter('trade_id', '=', str(completeTradeID))
+    completeTradeQuery.add_filter('meme_requested', '=', int(requested))
+    completeTradeQuery.add_filter('meme_offered', '=', int(offered))
+    
     theTradeToComplete = list(completeTradeQuery.fetch())
+    myTrade = theTradeToComplete[0]
+
     offered = datastore_client.query(kind='Meme')
-    offered.add_filter('id', '=', int(theTradeToComplete[0]['meme_offered']))
+    offered.add_filter('id', '=', int(myTrade['meme_offered']))
     offeredmeme = list(offered.fetch())
+    myoff = offeredmeme[0]
+
     requested = datastore_client.query(kind='Meme')
-    requested.add_filter('id', '=', int(theTradeToComplete[0]['meme_requested']))
+    requested.add_filter('id', '=', int(myTrade['meme_requested']))
     requestedmeme = list(offered.fetch())
-    requestedmeme[0]['owner'] = str(theTradeToComplete[0]['receiver'])
-    offeredmeme[0]['owner'] = str(theTradeToComplete[0]['sender'])
-    app.logger.error(str(theTradeToComplete[0]['sender']) + 'sender')
-    app.logger.error(str(requestedmeme[0]['owner'] + 'also sender'))
-    app.logger.error(str(theTradeToComplete[0]['receiver']) + 'receiver')
-    app.logger.error(str(offeredmeme[0]['owner'] + 'also receiver'))
-    datastore_client.delete(theTradeToComplete[0].key)
-    datastore_client.put(offeredmeme[0])
-    datastore_client.put(requestedmeme[0])
+    myreq = requestedmeme[0]
+
+    myreq['owner'] = str(myTrade['receiver'])
+    myoff['owner'] = str(myTrade['sender'])
+
+    app.logger.error(str(myTrade['sender']) + 'sender')
+    app.logger.error(str(myoff['owner'] + 'also sender'))
+    app.logger.error(str(myTrade['receiver']) + 'receiver')
+    app.logger.error(str(myreq['owner'] + 'also receiver'))
+
+    datastore_client.delete(myTrade.key)
+    datastore_client.put(myreq)
+    datastore_client.put(myoff)
     return redirect(url_for('trade'))
 # } Tim's section end. ===================================================
 
@@ -181,8 +195,14 @@ def go_notification():
 def go_user_notification(username):
     identity = get_identity()
     user_viewed = get_datastore_user_obj(username)
-
-    return render_template("notification.html", username = username, user_to_display = user_viewed, identity = identity)
+    
+    identity = get_identity()
+    user_to_display = get_datastore_user_obj(identity)
+    queryin = datastore_client.query(kind='Trade_Request')
+    queryin.add_filter('receiver', '=', identity)
+    incoming_trades = list(queryin.fetch())
+    numtrades = len(incoming_trades)
+    return render_template("notification.html", username = username, user_to_display = user_viewed, identity = identity, trades = numtrades)
 
 @app.route('/user/<username>/home', methods=['GET'])
 def go_user_home(username):
