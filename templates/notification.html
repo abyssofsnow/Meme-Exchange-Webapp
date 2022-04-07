@@ -25,9 +25,9 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group" role="group" aria-label="...">
-                                <button type="button" class="btn btn-info">view profile</button>
+                                <button type="button" class="btn btn-info"> <a href = "/user/{{friendRequest}}">view profile</a></button>
                                 <button type="button" class="btn btn-info" onclick = "acceptFriend('{{friendRequest}}')">accept</button>
-                                <button type="button" class="btn btn-info">denied</button>
+                                <button type="button" class="btn btn-info" onclick = "denieFriendRequest('{{friendRequest}}')">denied</button>
                             </div>
                         </div>
                     </div>
@@ -36,7 +36,7 @@
         </div>
         <div class="col-sm-6">
         <div class="well well-lg">
-            <h3><span class="label label-info">TRADE REQUESTS</span> <span class="badge">0</span></h3>
+            <h3><span class="label label-info">TRADE REQUESTS</span> <span class="badge">{{trades}}</span></h3>
         </div>
         </div>
     </div>
@@ -75,6 +75,22 @@
         request.open("POST", "/acceptAsFriend", true);
         request.setRequestHeader("Content-type", "application/json")
         request.send(JSON.stringify(acceptMsg));
+        setInterval(reloadThispage,1000);
+    }
+
+    function denieFriendRequest(senderName) {
+        var request = createXmlHttp();
+        var outerRef = this.document;
+        userIdentity = username;
+        otherUserIdentity = senderName;
+
+        var denieMsg = {
+            myIdentity: userIdentity,
+            friendIdentity: otherUserIdentity
+        };
+        request.open("POST", "/denieAFriend", true);
+        request.setRequestHeader("Content-type", "application/json")
+        request.send(JSON.stringify(denieMsg));
         setInterval(reloadThispage,1000);
     }
     

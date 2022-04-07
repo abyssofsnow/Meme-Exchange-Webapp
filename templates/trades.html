@@ -7,6 +7,14 @@
 	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      <script type="text/javascript">
+      function confirmTrade(reqe, offe){
+        const XHR = new XMLHttpRequest();
+        XHR.open("POST", '/trade/confirm/'+reqe+'/'+offe, false);
+        XHR.send();
+        window.location.replace('/trade');
+      }
+      </script>
 	  <style> 
 	  
 		/*incorporating the parallax scrolling effect*/
@@ -36,36 +44,72 @@
 	  </style>
 	</head>
 	<body>
-	{% include 'topNav.html' %}
+	{% if identity is defined and identity !='' %}
+            {%with identity = identity %}
+            {% include 'topNav.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'topNav.html' %}
+        {% endif %}
     <p id="test"></p>
     <div style="width: 100%; display: table;">
     <div style="display: table-row">
         <div style="width: 600px; display: table-cell;"> 
             <h1>Incoming Trades</h1>
-            <table style="width:100%" id="inTable">
-                <tr>
-                    <th>Meme Offered
-                    </th>
-                    <th>Meme Requested
-                    </th>
-                    <th>Sender
-                    </th>
-                    <th>Confirm Trade</th>
-                </tr>
-                {{intrades|safe}}
-            </table>
+            {% if intrades|length %}
+                <table style="width:100%" id="inTable">
+                    <tr>
+                        <th>Meme Offered
+                        </th>
+                        <th>Meme Requested
+                        </th>
+                        <th>Sender
+                        </th>
+                        <th>Confirm Trade</th>
+                    </tr>
+                    {% for intrade in intrades %}
+                        <tr>
+                            <td>{{intrade.meme_offered}}
+                            </td>
+                            <td>{{intrade.meme_requested}}
+                            </td>
+                            <td>{{intrade.sender}}
+                            </td>
+                            <td>
+                                <button type="button" onclick="confirmTrade({{intrade.meme_requested}},{{intrade.meme_offered}})">Confirm Trade</button>
+                            </td>
+                        </tr> 
+                    {% endfor %}
+                </table>
+                {% else %}
+                    <p> No incoming trades! </p>
+                {% endif %}
         </div>
         <div style="display: table-cell;"> <h1>Outgoing Trades</h1>
-            <table style="width:100%" id="inTable">
-                <tr>
-                    <th>Meme Offered
-                    </th>
-                    <th>Meme Requested
-                    </th>
-                    <th>Receiver
-                    </th>
-                </tr>
-                {{outtrades|safe}}
+            {% if outtrades|length %}
+                <table style="width:100%" id="inTable">
+                    <tr>
+                        <th>Meme Offered
+                        </th>
+                        <th>Meme Requested
+                        </th>
+                        <th>Receiver
+                        </th>
+                    </tr>
+                    {% for outtrade in outtrades %}
+                        <tr>
+                            <td>{{outtrade.meme_offered}}
+                            </td>
+                            <td>{{outtrade.meme_requested}}
+                            </td>
+                            <td>{{outtrade.receiver}}
+                            </td>
+                        </tr> 
+                    {% endfor %}
+                 </table>
+                {% else %}
+                    <p> No outgoing trades! </p>
+                {% endif %}
             </table> </div>
     </div>
 </div>

@@ -12,7 +12,13 @@
 	</head>
 	<body>
 
-		{% include 'topNav.html' %}
+		{% if identity is defined and identity !='' %}
+            {%with identity = identity %}
+            {% include 'topNav.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'topNav.html' %}
+        {% endif %}
 
         <div class="container">    
 
@@ -28,7 +34,7 @@
                     <h4>
                         Owner: <a href="/user/{{ meme_to_display.owner }}"> {{meme_to_display.owner}}</a>
                     </h4>
-			<button><a href="memeUpload.html" id="memeupload">Upload a Meme</a></button>
+			<button><a href="/meme/upload-new" id="memeupload">Upload a Meme</a></button>
 
                 </div>
                 <div class="col-sm-4">

@@ -4,7 +4,7 @@
 
 		 <title>Login to Meme Exchange</title>
 	<script type="text/javascript">
-
+    var loginpressed = false;
     /**
      * Handles the sign in button press.
      */
@@ -14,6 +14,7 @@
         firebase.auth().signOut();
         // [END signout]
       } else {
+        loginpressed = true;
         var email = document.getElementById('email').value;
         var password = document.getElementById('password').value;
         if (email.length < 4) {
@@ -40,7 +41,6 @@
           document.getElementById('quickstart-sign-in').disabled = false;
           // [END_EXCLUDE]
         });
-        // [END authwithemail]
       }
       document.getElementById('quickstart-sign-in').disabled = true;
     }
@@ -122,8 +122,8 @@
         var email = document.getElementById('email').value;
         XHR.open("POST", '/createuser/'+email, true);
         XHR.send();
-        
     }
+    
 
     function redirectSignUp(){
         if (firebase.auth().currentUser) {
@@ -133,6 +133,9 @@
             }
         window.location.replace('/signup');
 	}
+    function goHome(){
+        window.location.replace('/');
+    }
     /**
      * initApp handles setting up UI event listeners and registering Firebase auth listeners:
      *  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
@@ -140,11 +143,9 @@
      */
     function initApp() {
       // Listening for auth state changes.
+      firebase.auth().signOut();
       // [START authstatelistener]
       firebase.auth().onAuthStateChanged(function(user) {
-        // [START_EXCLUDE silent]
-        document.getElementById('quickstart-verify-email').disabled = true;
-        // [END_EXCLUDE]
         if (user) {
           // User is signed in.
           var displayName = user.displayName;
@@ -157,7 +158,6 @@
           // [START_EXCLUDE]
           document.getElementById('quickstart-sign-in-status').textContent = 'Signed in';
           document.getElementById('quickstart-sign-in').textContent = 'Sign out';
-          document.getElementById('quickstart-account-details').textContent = JSON.stringify(user, null, '  ');
           console.log(`Signed in as ${user.displayName} (${user.email})`);
           user.getIdToken().then(function (token) {
             // Add the token to the browser's cookies. The server will then be
@@ -167,16 +167,15 @@
             // user information.
             document.cookie = "token=" + token;
             });
-          if (!emailVerified) {
-            document.getElementById('quickstart-verify-email').disabled = false;
-          }
+            if (firebase.auth().currentUser && loginpressed) {
+                goHome();
+            }
           // [END_EXCLUDE]
         } else {
           // User is signed out.
           // [START_EXCLUDE]
           document.getElementById('quickstart-sign-in-status').textContent = 'Signed out';
           document.getElementById('quickstart-sign-in').textContent = 'Sign in';
-          document.getElementById('quickstart-account-details').textContent = 'null';
           document.cookie = "token=";
           // [END_EXCLUDE]
         }
@@ -188,7 +187,6 @@
 
       document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false);
       document.getElementById('quickstart-sign-up').addEventListener('click', redirectSignUp, false);
-      document.getElementById('quickstart-verify-email').addEventListener('click', sendEmailVerification, false);
       document.getElementById('quickstart-password-reset').addEventListener('click', sendPasswordReset, false);
     }
 
@@ -198,6 +196,13 @@
   </script>
 		</head>
 	<body>
+	{% if user_to_display is defined and identity !='' %}
+            {%with tempId = user_to_display.username %}
+            {% include 'topNav.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'topNav.html' %}
+        {% endif %}
 
 		<div class="container">
 			<input type="text" id="email" name="email" placeholder="Email">
@@ -212,10 +217,6 @@
 				Sign Up
 			</button>
           &nbsp;&nbsp;&nbsp;
-			<button disabled id="quickstart-verify-email" name="verify-email">
-				Send Email Verification
-			</button>
-          &nbsp;&nbsp;&nbsp;
 			<button id="quickstart-password-reset" name="verify-email">
 				Send Password Reset Email
 			</button>
@@ -226,10 +227,10 @@
 			</button>
 		</div>
         <div class="quickstart-user-details-container">
-            Firebase sign-in status: <span id="quickstart-sign-in-status">Unknown</span>
-            <div>Firebase auth <code>currentUser</code> object value:</div>
-            <pre><code id="quickstart-account-details">null</code></pre>
-          </div>
+    		<p style="color: #ffffff">
+            		Firebase sign-in status: <span id="quickstart-sign-in-status">Signed out</span>
+   		</p>
+	</div>
 		<!-- The core Firebase JS SDK is always required and must be listed first -->
 		<script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-auth.js"></script>
